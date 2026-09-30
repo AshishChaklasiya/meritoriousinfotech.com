@@ -29,6 +29,7 @@ import {
   WebDesignIcon,
 } from "@/components/services/tab-icons"
 import type { ServiceTab, ServiceTabIcon } from "@/lib/content/service-details"
+import { prefersReducedMotion } from "@/lib/motion/env"
 import { cn } from "@/lib/utils"
 
 const TAB_ICONS: Record<ServiceTabIcon, typeof UserExperienceIcon> = {
@@ -48,10 +49,6 @@ const TAB_ICONS: Record<ServiceTabIcon, typeof UserExperienceIcon> = {
   apple: AppleIcon,
   flutter: FlutterIcon,
   "react-native": ReactNativeIcon,
-}
-
-function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
 }
 
 function TabPanelContent({ tab }: { tab: ServiceTab }) {
@@ -270,7 +267,7 @@ export function ServiceCapabilityTabs({ tabs }: { tabs: ServiceTab[] }) {
               className={cn(
                 "flex items-center gap-4 border-divider p-6 text-left text-base leading-5 font-medium transition-colors not-last:border-b lg:whitespace-nowrap",
                 active
-                  ? "bg-brand text-surface"
+                  ? "bg-brand text-snow"
                   : "bg-surface text-ink hover:bg-canvas-muted hover:text-brand"
               )}
             >

@@ -10,6 +10,7 @@ import {
   LinkedinIcon,
 } from "@/components/icons"
 import { CtaLink } from "@/components/ui/cta-link"
+import { TraceLine } from "@/components/ui/trace-line"
 
 const SERVICE_LINKS = [
   { label: "UI UX & Graphics Design", href: "/services/graphic-ui-ux-design" },
@@ -58,7 +59,7 @@ export const SOCIAL_LINKS = [
 
 function ColumnHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="pb-2 text-title leading-5 font-semibold tracking-[0.09em] text-surface">
+    <h2 className="pb-2 text-title leading-5 font-semibold tracking-[0.09em] text-snow">
       {children}
     </h2>
   )
@@ -82,7 +83,7 @@ function ContactCta() {
             id="cta-title"
             data-anim="lines"
             data-delay="0.05"
-            className="text-cta font-semibold text-surface"
+            className="text-cta font-semibold text-snow"
           >
             We design and develop
             <br />
@@ -120,7 +121,7 @@ export function SiteFooter() {
   const year = new Date().getFullYear()
 
   return (
-    <div className="relative isolate overflow-hidden bg-ink">
+    <div className="relative isolate overflow-hidden bg-night">
       {/* Soft colour glows */}
       <div
         aria-hidden="true"
@@ -138,11 +139,11 @@ export function SiteFooter() {
         {/* Letters rise into place as the footer scrolls into view */}
         <p
           data-anim="wordmark"
-          className="text-center text-[min(12vw,11.25rem)] leading-none font-semibold tracking-[0.06em] text-surface/26 select-none"
+          className="text-center text-[min(12vw,11.25rem)] leading-none font-semibold tracking-[0.06em] text-snow/26 select-none"
         >
           MERITORIOUS
         </p>
-        <div className="absolute inset-0 bg-linear-to-b from-ink/25 to-ink" />
+        <div className="absolute inset-0 bg-linear-to-b from-night/25 to-night" />
       </div>
 
       <footer className="relative -mt-3.5">
@@ -179,7 +180,7 @@ export function SiteFooter() {
                       rel="noopener noreferrer"
                       aria-label={social.label}
                       data-magnetic="0.4"
-                      className="flex size-10 items-center justify-center rounded-[14px] border border-divider-inverse text-surface transition-colors hover:border-brand hover:text-brand"
+                      className="flex size-10 items-center justify-center rounded-[14px] border border-divider-inverse text-snow transition-colors hover:border-brand hover:text-brand"
                     >
                       {social.icon}
                     </a>
@@ -198,7 +199,7 @@ export function SiteFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="inline-block text-grey-2 transition-[color,translate] duration-300 hover:translate-x-1 hover:text-surface"
+                      className="inline-block text-grey-2 transition-[color,translate] duration-300 hover:translate-x-1 hover:text-snow"
                     >
                       {link.label}
                     </Link>
@@ -217,7 +218,7 @@ export function SiteFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="inline-block text-grey-2 transition-[color,translate] duration-300 hover:translate-x-1 hover:text-surface"
+                      className="inline-block text-grey-2 transition-[color,translate] duration-300 hover:translate-x-1 hover:text-snow"
                     >
                       {link.label}
                     </Link>
@@ -235,7 +236,7 @@ export function SiteFooter() {
                       TEL:{" "}
                       <a
                         href={`tel:${group.phone.replace(/\s/g, "")}`}
-                        className="transition-colors hover:text-surface"
+                        className="transition-colors hover:text-snow"
                       >
                         {group.phone}
                       </a>
@@ -244,7 +245,7 @@ export function SiteFooter() {
                       Email:{" "}
                       <a
                         href={`mailto:${group.email}`}
-                        className="transition-colors hover:text-surface"
+                        className="transition-colors hover:text-snow"
                       >
                         {group.email}
                       </a>
@@ -255,7 +256,8 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-6 border-t border-divider-inverse pt-8">
+          <div className="relative flex items-center justify-between gap-6 pt-8">
+            <TraceLine tone="dark" className="absolute inset-x-0 top-0" />
             <p className="text-body-sm text-grey-2">
               © {year} MERITORIOUS INFOTECH. ALL RIGHTS RESERVED.
             </p>
@@ -263,7 +265,7 @@ export function SiteFooter() {
               href="#top"
               aria-label="Back to top"
               data-magnetic="0.4"
-              className="group/top flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-divider-inverse text-surface shadow-dropdown transition-colors hover:border-brand hover:text-brand"
+              className="group/top flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-divider-inverse text-snow shadow-dropdown transition-colors hover:border-brand hover:text-brand"
             >
               {/* Arrow launches up and re-enters from below on hover */}
               <ArrowUpIcon className="size-[22px] group-hover/top:animate-[launch_0.6s_cubic-bezier(0.16,1,0.3,1)]" />

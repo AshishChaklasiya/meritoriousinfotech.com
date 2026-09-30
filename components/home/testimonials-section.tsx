@@ -58,7 +58,13 @@ function ReviewCard({ review }: { review: Review }) {
       </div>
       <div className="flex justify-between gap-4 border-t border-divider pt-3 font-mono text-micro uppercase">
         <span className="text-grey-2">Auth: Google_OAuth</span>
-        <span className="text-brand">Verified</span>
+        <span className="flex items-center gap-1.5 text-brand">
+          <span
+            aria-hidden="true"
+            className="animate-breathe size-1 rounded-full bg-brand"
+          />
+          Verified
+        </span>
       </div>
     </figure>
   )
@@ -73,6 +79,7 @@ export function TestimonialsSection() {
       <div className="container-content flex flex-col gap-11">
         <SectionHeader
           id="testimonials-title"
+          index="05"
           eyebrow="Testimonials"
           title={"Customer Voices:\nVerified Telemetry"}
           description="Authentic reviews and verified ratings from global enterprise stakeholders, partners, and founders who trust our architectural execution."

@@ -18,6 +18,11 @@ import {
  * physical. Everything moves in the vertex shader (one draw call, no per-frame
  * CPU work per point). The pointer drops a ripple that heats dots to brand
  * orange; with no pointer the ripple wanders on its own.
+ *
+ * Micro layer: dots are also pushed sideways away from the pointer
+ * (repulsion), pointer speed feeds an "energy" value that briefly strengthens
+ * and warms the ripple before settling, and the camera eases toward the
+ * pointer for a little depth parallax.
  */
 
 const COLS = 150
@@ -31,6 +36,7 @@ const vertexShader = /* glsl */ `
   uniform float uPointerStrength;
   uniform float uPixelRatio;
   uniform float uCalm;
+  uniform float uEnergy;
   varying float vAlpha;
   varying float vHeat;
 
@@ -42,9 +48,13 @@ const vertexShader = /* glsl */ `
       sin((p.x + p.z) * 0.22 + uTime * 0.3) * 0.28;
     wave *= uCalm;
 
-    float d = distance(p.xz, uPointer);
+    vec2 away = p.xz - uPointer;
+    float d = length(away);
     float ripple = exp(-d * d * 0.4) * uPointerStrength;
-    p.y += wave + ripple * 0.9 + sin(d * 2.6 - uTime * 3.2) * ripple * 0.25;
+    float lift = 0.8 + uEnergy * 0.5;
+    p.y += wave + ripple * 0.9 * lift + sin(d * 2.6 - uTime * 3.2) * ripple * 0.25;
+    // Repulsion: dots part around the pointer
+    p.xz += (away / max(d, 0.001)) * ripple * (0.22 + uEnergy * 0.3);
 
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
@@ -53,7 +63,11 @@ const vertexShader = /* glsl */ `
     float far = smoothstep(22.0, 7.0, -mv.z);
     float sides = 1.0 - smoothstep(10.0, 15.0, abs(p.x));
     vAlpha = far * sides;
-    vHeat = clamp(ripple * 1.2 + smoothstep(0.45, 0.85, wave) * 0.35, 0.0, 1.0);
+    vHeat = clamp(
+      ripple * (1.2 + uEnergy * 0.4) + smoothstep(0.45, 0.85, wave) * 0.35,
+      0.0,
+      1.0
+    );
   }
 `
 
@@ -128,6 +142,7 @@ export function createHeroScene(
     uPixelRatio: { value: pixelRatio },
     uResolution: { value: new Vector2(1, 1) },
     uCalm: { value: 1 },
+    uEnergy: { value: 0 },
     uOpacity: { value: 1 },
     uBase: { value: new Color("#8a8a8c") },
     uHot: { value: new Color("#ff7c1a") },
@@ -146,7 +161,11 @@ export function createHeroScene(
   const ground = new Plane(new Vector3(0, 1, 0), 0)
   const hit = new Vector3()
   const pointerTarget = new Vector2(0, 0)
+  const pointerNdc = new Vector2(0, 0)
+  const lastHit = new Vector2(0, 0)
+  const lookTarget = new Vector3(0, -0.4, -2)
   let pointerActive = false
+  let energyTarget = 0
   let scroll = 0
 
   function resize() {
@@ -187,7 +206,18 @@ export function createHeroScene(
       (strength - uniforms.uPointerStrength.value) * 0.05
     uniforms.uCalm.value = 1 - scroll * 0.6
     uniforms.uOpacity.value = 1 - scroll * 0.7
-    camera.position.y = 3.1 + scroll * 1.4
+
+    // Energy rises with pointer speed and decays back to calm
+    energyTarget *= 0.92
+    uniforms.uEnergy.value += (energyTarget - uniforms.uEnergy.value) * 0.08
+
+    // Camera eases toward the pointer (depth parallax); rises with scroll
+    const px = pointerActive ? pointerNdc.x : 0
+    const py = pointerActive ? pointerNdc.y : 0
+    camera.position.x += (px * 0.7 - camera.position.x) * 0.04
+    const baseY = 3.1 + scroll * 1.4 + py * 0.2
+    camera.position.y += (baseY - camera.position.y) * 0.06
+    camera.lookAt(lookTarget)
 
     renderer.render(scene, camera)
 
@@ -217,10 +247,14 @@ export function createHeroScene(
         pointerActive = false
         return
       }
-      raycaster.setFromCamera(new Vector2(ndc.x, ndc.y), camera)
+      pointerNdc.set(ndc.x, ndc.y)
+      raycaster.setFromCamera(pointerNdc, camera)
       if (raycaster.ray.intersectPlane(ground, hit)) {
         pointerActive = true
         pointerTarget.set(hit.x, hit.z)
+        const moved = lastHit.distanceTo(pointerTarget)
+        energyTarget = Math.min(1, energyTarget + moved * 0.35)
+        lastHit.copy(pointerTarget)
       }
     },
     setScroll(progress) {

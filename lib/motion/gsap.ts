@@ -25,9 +25,9 @@ gsap.defaults({ ease: EASE.out, duration: 1 })
 ScrollTrigger.config({ ignoreMobileResize: true })
 
 /**
- * SplitText with the element's height locked while it is split: the temporary
- * line/word wrappers measure a few px differently from inline text, which
- * would otherwise nudge the layout below (CLS) on split and again on revert.
+ * SplitText with the element's box height locked while it is split, so the
+ * temporary line/word wrappers can never push surrounding content around
+ * (e.g. a forced break that differs from the natural wrap).
  */
 export function splitStable(el: HTMLElement, vars: SplitText.Vars) {
   el.style.height = `${el.getBoundingClientRect().height}px`

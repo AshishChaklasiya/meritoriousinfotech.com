@@ -1,4 +1,5 @@
 import Image from "next/image"
+import type { CSSProperties } from "react"
 
 import { RocketIcon, TargetIcon } from "@/components/icons"
 import { IconCard } from "@/components/ui/icon-card"
@@ -93,6 +94,7 @@ export function TeamSection() {
           {TEAM.map((member) => (
             <li
               key={member.photo}
+              data-pointer
               className="group/member flex flex-col gap-5 xl:gap-7"
             >
               <div
@@ -101,13 +103,19 @@ export function TeamSection() {
                 className="relative aspect-[298/318] overflow-hidden rounded-[4px]"
               >
                 <div data-anim-inner className="absolute inset-0">
-                  <Image
-                    src={member.photo}
-                    alt={`${member.name}, ${member.role}`}
-                    fill
-                    sizes="(min-width: 1024px) 298px, 50vw"
-                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/member:scale-105"
-                  />
+                  <div
+                    data-depth
+                    style={{ "--depth": -12 } as CSSProperties}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={member.photo}
+                      alt={`${member.name}, ${member.role}`}
+                      fill
+                      sizes="(min-width: 1024px) 298px, 50vw"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/member:scale-[1.04]"
+                    />
+                  </div>
                 </div>
                 {/* Brand rule sweeps across the portrait's foot on hover */}
                 <span
@@ -115,7 +123,7 @@ export function TeamSection() {
                   className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-brand transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/member:scale-x-100"
                 />
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/member:translate-x-1">
                 <h3 className="text-xl leading-[1.25] font-medium tracking-[-0.01em] text-ink md:text-2xl">
                   {member.name}
                 </h3>
@@ -167,7 +175,7 @@ export function CultureSection() {
             fadeClassName="from-surface"
             fadeWidthClassName="w-16 md:w-[200px]"
             data-parallax-x={index % 2 === 1 ? -3 : 3}
-            data-velocity-skew
+            data-velocity="skew"
           >
             {[...row, ...row].map((src, i) => (
               <div

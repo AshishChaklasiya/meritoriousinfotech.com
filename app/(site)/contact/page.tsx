@@ -137,7 +137,9 @@ export default function ContactPage() {
               src={MAP_SRC}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="size-full border-0 grayscale-[0.2]"
+              // Cross-origin map can't be themed; in dark mode invert it and
+              // rotate hues back so water stays blue and parks stay green
+              className="size-full border-0 grayscale-[0.2] dark:brightness-90 dark:hue-rotate-180 dark:invert"
             />
           </div>
         </div>

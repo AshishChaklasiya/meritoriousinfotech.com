@@ -135,11 +135,11 @@ function ModuleCard({ module }: { module: Module }) {
     <div
       data-pointer
       data-hover-group
-      className="group/module spotlight flex flex-col gap-1.5 rounded-card border border-divider bg-surface p-6 transition-colors duration-200 hover:border-divider/10 hover:bg-ink"
+      className="group/module spotlight flex flex-col gap-1.5 rounded-card border border-divider bg-surface p-6 transition-[color,background-color,border-color,translate] duration-300 hover:-translate-y-0.5 hover:border-divider/10 hover:bg-ink"
     >
       <p
         data-scramble-hover
-        className="font-mono text-eyebrow tracking-normal text-grey-1"
+        className="font-mono text-eyebrow tracking-normal text-grey-1 transition-[translate,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/module:translate-x-1 group-hover/module:text-brand"
       >
         {module.code}
       </p>
@@ -173,7 +173,7 @@ function ServiceGroupRow({ group }: { group: ServiceGroup }) {
       <span
         aria-hidden="true"
         data-stack-shade
-        className="pointer-events-none absolute inset-0 z-10 bg-ink/[0.07] opacity-0"
+        className="pointer-events-none absolute inset-0 z-10 bg-night/[0.07] opacity-0 dark:bg-night/45"
       />
       <div
         data-anim="fade-up"
@@ -222,6 +222,7 @@ export function ServicesSection() {
       <div data-scene="stack" className="container-content flex flex-col gap-8">
         <SectionHeader
           id="services-title"
+          index="01"
           eyebrow="Services & System Modules"
           title={"Engineered for\nPerformance, Rigor &\nScale"}
           description="Standardized engineering lifecycles. We build scalable backend fabrics, fluid interactive frontends, and unified enterprise applications."

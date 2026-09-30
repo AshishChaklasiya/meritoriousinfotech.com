@@ -13,6 +13,7 @@ export function PortfolioSection() {
       <div className="container-content flex flex-col items-center gap-10 md:gap-16">
         <SectionHeader
           id="portfolio-title"
+          index="04"
           eyebrow="Portfolio"
           title={"Discover Our Winning\nProject Portfolio"}
           description="Real products, real users, real results - see how we’ve helped founders and enterprises launch web, mobile, and AI-powered applications across industries."

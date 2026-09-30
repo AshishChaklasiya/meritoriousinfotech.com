@@ -47,6 +47,7 @@ export function CapabilitiesSection() {
       <div className="container-content flex flex-col gap-10 md:gap-16">
         <SectionHeader
           id="capabilities-title"
+          index="02"
           eyebrow="Our Capabilities"
           title="We Turn Ideas Into Digital Experiences"
           description="From intuitive interfaces to powerful web and mobile solutions, we build digital products designed around your goals and your users."

@@ -76,7 +76,7 @@ export function PortfolioBrowser() {
               className={cn(
                 "inline-flex items-center gap-2 rounded-[2px] border px-4 py-2 text-body-sm leading-5 font-medium transition-[color,background-color,border-color,translate] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:translate-y-px",
                 active
-                  ? "border-brand bg-brand text-surface"
+                  ? "border-brand bg-brand text-snow"
                   : "border-divider bg-surface text-ink hover:border-ink"
               )}
             >
@@ -84,7 +84,7 @@ export function PortfolioBrowser() {
               <span
                 className={cn(
                   "text-[10px] leading-none font-medium",
-                  active ? "text-surface" : "text-grey-1"
+                  active ? "text-snow" : "text-grey-1"
                 )}
               >
                 {item.count}

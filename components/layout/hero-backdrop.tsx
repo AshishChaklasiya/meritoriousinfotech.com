@@ -1,5 +1,5 @@
 import Image from "next/image"
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -15,7 +15,8 @@ type HeroBackdropProps = {
 /**
  * Shared hero background: faint grid, soft colour glows and a fade into the
  * canvas. Place inside a `relative isolate overflow-hidden` section; add
- * `data-pointer` to the section to light the grid up under the cursor.
+ * `data-pointer` to the section to light the grid up under the cursor and
+ * let the glows drift with it (layered depth: glows > content).
  */
 export function HeroBackdrop({
   leftGlow = false,
@@ -53,7 +54,12 @@ export function HeroBackdrop({
           data-hero-glow
           className="absolute top-[34px] -left-[183px] -z-10 size-[519px]"
         >
-          <div className="animate-drift size-full rounded-full bg-[#FED7AA]/50 blur-[125px]" />
+          {/* Inner layer: pointer depth (CSS) + drift; GSAP owns the wrapper */}
+          <div
+            data-depth
+            style={{ "--depth": 28 } as CSSProperties}
+            className="animate-drift size-full rounded-full bg-[#FED7AA]/50 blur-[125px] dark:bg-brand/[0.14]"
+          />
         </div>
       )}
       <div
@@ -64,7 +70,11 @@ export function HeroBackdrop({
           rightGlowClassName
         )}
       >
-        <div className="animate-drift-reverse size-full rounded-full bg-[#DC3545]/20 blur-[100px]" />
+        <div
+          data-depth
+          style={{ "--depth": -22 } as CSSProperties}
+          className="animate-drift-reverse size-full rounded-full bg-[#DC3545]/20 blur-[100px] dark:bg-[#DC3545]/[0.14]"
+        />
       </div>
 
       {children}

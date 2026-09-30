@@ -28,7 +28,7 @@ const TECH_ROWS = [
 
 function TechPill({ label }: { label: string }) {
   return (
-    <span className="flex min-w-[107px] items-center justify-center rounded-card border border-divider bg-surface px-3.5 py-4 font-tech text-body-sm leading-[1.3] font-medium whitespace-nowrap text-black transition-[color,border-color,translate] duration-300 hover:-translate-y-1 hover:border-brand hover:text-brand">
+    <span className="flex min-w-[107px] items-center justify-center rounded-card border border-divider bg-surface px-3.5 py-4 font-tech text-body-sm leading-[1.3] font-medium whitespace-nowrap text-ink transition-[color,border-color,translate] duration-300 hover:-translate-y-1 hover:border-brand hover:text-brand">
       {label}
     </span>
   )
@@ -43,6 +43,7 @@ export function TechnologiesSection() {
       <div className="container-content flex flex-col gap-11">
         <SectionHeader
           id="technologies-title"
+          index="03"
           eyebrow="Technology stack"
           title="Our Technologies we specialize in Development"
           description="We leverage the industry's most advanced frameworks and languages to design scalable, secure, and future-proof digital solutions."
@@ -67,7 +68,7 @@ export function TechnologiesSection() {
             <div
               key={index}
               data-parallax-x={index % 2 === 1 ? -4 : 4}
-              data-velocity-skew
+              data-velocity="skew"
             >
               <Marquee
                 reverse={index % 2 === 1}

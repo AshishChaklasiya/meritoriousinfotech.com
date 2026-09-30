@@ -29,8 +29,11 @@ export function IconCard({
       data-pointer
       data-tilt={interactive ? 5 : undefined}
       className={cn(
-        "group/icon-card spotlight flex flex-col gap-6 border border-divider bg-surface p-6 sm:p-8",
-        interactive && "transition-colors duration-200 hover:bg-ink",
+        "group/icon-card spotlight flex flex-col gap-6 border border-divider bg-surface p-6 transition-[color,background-color,border-color,translate] duration-300 sm:p-8",
+        // Interactive cards tilt + lift via GSAP; calm ones lift in CSS
+        interactive
+          ? "hover:bg-ink"
+          : "hover:-translate-y-1 hover:border-brand/40",
         className
       )}
     >
@@ -38,7 +41,7 @@ export function IconCard({
         className={cn(
           "flex size-12 items-center justify-center border border-ink-strong text-ink transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/icon-card:-rotate-6",
           interactive &&
-            "transition-[color,background-color,border-color,rotate] group-hover/icon-card:border-brand group-hover/icon-card:bg-brand group-hover/icon-card:text-surface"
+            "transition-[color,background-color,border-color,rotate] group-hover/icon-card:border-brand group-hover/icon-card:bg-brand group-hover/icon-card:text-snow"
         )}
       >
         {Icon ? <Icon className="size-6" /> : media}

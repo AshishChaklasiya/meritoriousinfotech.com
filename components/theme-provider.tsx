@@ -3,6 +3,8 @@
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
+import { switchTheme } from "@/components/theme-toggle"
+
 function ThemeProvider({
   children,
   ...props
@@ -55,7 +57,8 @@ function ThemeHotkey() {
         return
       }
 
-      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+      // Same circular reveal as the header toggle, from the top centre
+      switchTheme(resolvedTheme === "dark" ? "light" : "dark", setTheme)
     }
 
     window.addEventListener("keydown", onKeyDown)
