@@ -19,6 +19,12 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        // Figma "Link" / "Action Button → Link" component sets: orange fill with
+        // a hard offset shadow; hover swaps to white fill + divider border.
+        brand:
+          "rounded-none bg-brand text-surface shadow-brutal hover:border-divider hover:bg-surface hover:text-ink hover:shadow-none",
+        "brand-inverse":
+          "rounded-none bg-brand text-surface shadow-brutal-inverse hover:border-divider hover:bg-surface hover:text-ink hover:shadow-none",
       },
       size: {
         default:
@@ -30,6 +36,9 @@ const buttonVariants = cva(
         "icon-xs": "size-5 rounded-sm [&_svg:not([class*='size-'])]:size-2.5",
         "icon-sm": "size-6 [&_svg:not([class*='size-'])]:size-3",
         "icon-lg": "size-8 [&_svg:not([class*='size-'])]:size-4",
+        // Brand CTA sizes (Figma: 16/32 padding, 12px semibold caps; 12/20 padding, 11px medium caps)
+        cta: "h-auto gap-3 px-8 py-4 text-label font-semibold uppercase [&_svg:not([class*='size-'])]:size-[18px]",
+        nav: "h-auto gap-2 px-5 py-3 text-eyebrow font-medium uppercase [&_svg:not([class*='size-'])]:size-[17px]",
       },
     },
     defaultVariants: {

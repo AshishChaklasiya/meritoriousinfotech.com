@@ -4,126 +4,525 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+/*
+ * Brand design tokens — sourced from the Figma file's paint styles,
+ * text styles and effects (Home frame 6:64).
+ *
+ *   Figma style        → token
+ *   primary Color      → --color-brand        #FF7C1A
+ *   Black Text         → --color-ink          #0C0D0E
+ *   Cod Gray (ink)     → --color-ink-strong   #111111
+ *   Grey 1             → --color-grey-1       #707072
+ *   Grey 2             → --color-grey-2       #A1A1A3
+ *   Devider Color      → --color-divider      #E7E7E5
+ *   BG Color           → --color-canvas       #F9F9F8
+ *   BG 2               → --color-canvas-muted #FCFCFB
+ *   white BG           → --color-surface      #FFFFFF
+ */
+@theme {
+  --color-brand: #ff7c1a;
+  --color-ink: #0c0d0e;
+  --color-ink-strong: #111111;
+  --color-grey-1: #707072;
+  --color-grey-2: #a1a1a3;
+  --color-divider: #e7e7e5;
+  --color-divider-inverse: rgb(231 231 229 / 0.15);
+  --color-canvas: #f9f9f8;
+  --color-canvas-muted: #fcfcfb;
+  --color-surface: #ffffff;
+  --color-star: #f59e0b;
+  --color-brand-soft: #fff4ed; /* Figma "Light Primary" */
+
+  /* Layout */
+  --container-content: 82rem; /* 1312px content column */
+
+  /* Radius — cards and pills use a 2px corner */
+  --radius-card: 2px;
+
+  /* Effects — hard offset "brutal" shadow on CTAs */
+  --shadow-brutal: 4px 4px 0 0 #121212;
+  --shadow-brutal-inverse: 4px 4px 0 0 #ffffff;
+  /* Figma effect style "Drop Shadow/200" — dropdowns, floating controls */
+  --shadow-dropdown:
+    0 1px 4px 0 rgb(12 12 13 / 0.05), 0 1px 4px 0 rgb(12 12 13 / 0.1);
+
+  /* Type scale — values from Figma text styles; large sizes are fluid and hit the
+     exact Figma size at the 1920 artboard */
+  --text-display: clamp(2.75rem, 1.5rem + 4.4vw, 5.875rem); /* 94 @1920 */
+  --text-display--line-height: 0.96;
+  --text-display--letter-spacing: -0.04em;
+
+  --text-stat: clamp(2.75rem, 2rem + 2.2vw, 4.25rem); /* 68 @1920 */
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.04em;
+
+  --text-h2: clamp(2.25rem, 1.5rem + 2.5vw, 3.625rem); /* 58 @1920 */
+  --text-h2--line-height: 1.05;
+  --text-h2--letter-spacing: -0.025em;
+
+  --text-cta: clamp(2rem, 1.25rem + 1.8vw, 2.8125rem); /* 45 @1920 */
+  --text-cta--line-height: 1.3;
+  --text-cta--letter-spacing: -0.028em;
+
+  --text-h3: clamp(1.625rem, 1.25rem + 0.8vw, 2rem); /* 32 @1920 */
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.025em;
+
+  --text-h4: 1.375rem; /* 22 */
+  --text-h4--line-height: 1.27;
+  --text-h4--letter-spacing: -0.036em;
+
+  --text-title-lg: 1.25rem; /* 20 */
+  --text-title-lg--line-height: 1.375;
+
+  --text-lead: 1.25rem; /* 20 */
+  --text-lead--line-height: 1.65;
+
+  --text-title: 1rem; /* 16 */
+  --text-title--line-height: 1.5;
+
+  --text-body: 0.9375rem; /* 15 */
+  --text-body--line-height: 1.625;
+
+  --text-body-sm: 0.875rem; /* 14 */
+  --text-body-sm--line-height: 1.625;
+
+  --text-caption: 0.8125rem; /* 13 */
+  --text-caption--line-height: 1.5;
+
+  --text-label: 0.75rem; /* 12 */
+  --text-label--line-height: 1.5;
+  --text-label--letter-spacing: 0.12em;
+
+  --text-eyebrow: 0.6875rem; /* 11 */
+  --text-eyebrow--line-height: 1.5;
+  --text-eyebrow--letter-spacing: 0.12em;
+
+  --text-micro: 0.625rem; /* 10 */
+  --text-micro--line-height: 1.5;
+
+  /* Motion */
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-marquee-reverse: marquee var(--marquee-duration, 40s) linear
+    infinite reverse;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50% - var(--marquee-gap, 0px) / 2));
+    }
+  }
 }
 
+@theme inline {
+  --font-sans: var(--font-outfit);
+  --font-heading: var(--font-outfit);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-tech: var(--font-manrope);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* shadcn semantic tokens, mapped onto the brand palette above */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.837 0.128 66.29);
-    --chart-2: oklch(0.705 0.213 47.604);
-    --chart-3: oklch(0.646 0.222 41.116);
-    --chart-4: oklch(0.553 0.195 38.402);
-    --chart-5: oklch(0.47 0.157 37.304);
-    --radius: 0.45rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+  --background: var(--color-canvas);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-brand);
+  --primary-foreground: var(--color-surface);
+  --secondary: var(--color-canvas-muted);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-canvas-muted);
+  --muted-foreground: var(--color-grey-1);
+  --accent: var(--color-canvas-muted);
+  --accent-foreground: var(--color-ink);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: var(--color-divider);
+  --input: var(--color-divider);
+  --ring: var(--color-brand);
+  --chart-1: oklch(0.837 0.128 66.29);
+  --chart-2: oklch(0.705 0.213 47.604);
+  --chart-3: oklch(0.646 0.222 41.116);
+  --chart-4: oklch(0.553 0.195 38.402);
+  --chart-5: oklch(0.47 0.157 37.304);
+  --radius: 0.125rem;
+  --sidebar: var(--color-canvas);
+  --sidebar-foreground: var(--color-ink);
+  --sidebar-primary: var(--color-brand);
+  --sidebar-primary-foreground: var(--color-surface);
+  --sidebar-accent: var(--color-canvas-muted);
+  --sidebar-accent-foreground: var(--color-ink);
+  --sidebar-border: var(--color-divider);
+  --sidebar-ring: var(--color-brand);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.837 0.128 66.29);
-    --chart-2: oklch(0.705 0.213 47.604);
-    --chart-3: oklch(0.646 0.222 41.116);
-    --chart-4: oklch(0.553 0.195 38.402);
-    --chart-5: oklch(0.47 0.157 37.304);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: var(--color-brand);
+  --primary-foreground: var(--color-surface);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: var(--color-brand);
+  --chart-1: oklch(0.837 0.128 66.29);
+  --chart-2: oklch(0.705 0.213 47.604);
+  --chart-3: oklch(0.646 0.222 41.116);
+  --chart-4: oklch(0.553 0.195 38.402);
+  --chart-5: oklch(0.47 0.157 37.304);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: var(--color-brand);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--color-brand);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+    /* Safety net for drifting/skewed rows; clip (not hidden) keeps sticky working */
+    overflow-x: clip;
+  }
   html {
     @apply font-sans;
+  }
+}
+
+/* Content column: 1312px max (304px side margins at the 1920 artboard), fluid gutters below that */
+@utility container-content {
+  --gutter: 1rem;
+  width: min(calc(100% - 2 * var(--gutter)), var(--container-content));
+  margin-inline: auto;
+
+  @media (width >= 40rem) {
+    --gutter: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    --gutter: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-drift,
+  .animate-drift-reverse {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Motion system — see lib/motion/scroll-effects.ts
+   `html.motion` is set by the boot script in app/layout.tsx only when motion
+   is allowed, so no-JS and reduced-motion visitors always get static content.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Hidden until their entrance plays (visibility keeps layout; no CLS) */
+html.motion
+  :is(
+    [data-anim="fade-up"],
+    [data-anim="fade"],
+    [data-anim="lines"],
+    [data-anim="words"],
+    [data-anim="scramble"],
+    [data-anim="draw"],
+    [data-anim="image"],
+    [data-anim="wordmark"],
+    [data-anim="counter"],
+    [data-hero-el],
+    [data-process-step]
+  ):not([data-revealed]),
+html.motion [data-anim="stagger"]:not([data-revealed]) > * {
+  visibility: hidden;
+}
+
+/* SplitText line masks: extend the clip box so descenders (tight display
+   line-heights) aren't cut mid-reveal. Paint-only — padding/negative margins
+   would collapse between stacked lines and shift layout. */
+.split-line-mask {
+  overflow-clip-margin: 0.14em;
+}
+
+/* --- Curtain: first-visit loader + route transitions ---------------------- */
+.curtain {
+  visibility: hidden;
+  transform: translateY(100%);
+  will-change: transform;
+}
+.curtain-intro {
+  display: none;
+}
+html.intro .curtain {
+  visibility: visible;
+  transform: none;
+}
+html.intro .curtain-intro {
+  display: flex;
+}
+html.intro body {
+  overflow: hidden;
+}
+
+/* --- Cursor follower (fine pointers only; native cursor stays) ------------ */
+.cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -1.125rem 0 0 -1.125rem;
+  border: 1px solid rgb(12 13 14 / 0.25);
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.3s,
+    width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s,
+    border-color 0.3s;
+}
+.cursor-follower[data-visible] {
+  opacity: 1;
+}
+.cursor-follower[data-state="hover"] {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: -1.75rem 0 0 -1.75rem;
+  border-color: var(--color-brand);
+  background-color: rgb(255 124 26 / 0.08);
+}
+.cursor-follower[data-state="label"] {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: -2.75rem 0 0 -2.75rem;
+  border-color: var(--color-brand);
+  background-color: var(--color-brand);
+}
+.cursor-follower-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-surface);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cursor-follower[data-state="label"] .cursor-follower-label {
+  opacity: 1;
+}
+@media not ((hover: hover) and (pointer: fine)) {
+  .cursor-follower {
+    display: none;
+  }
+}
+
+/* --- Pointer spotlights (vars fed by MotionRoot on [data-pointer]) -------- */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 50%),
+    rgb(255 124 26 / 0.14),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Hero grid that lights up around the cursor */
+.grid-spotlight {
+  background-image:
+    linear-gradient(to right, rgb(255 124 26 / 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 124 26 / 0.22) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: center top;
+  mask-image: radial-gradient(
+    16rem circle at var(--mx, -100%) var(--my, -100%),
+    #000,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+[data-pointer]:hover .grid-spotlight {
+  opacity: 1;
+}
+@media not ((hover: hover) and (pointer: fine)) {
+  .grid-spotlight {
+    display: none;
+  }
+}
+
+/* --- Ambient drift for the soft colour glows ----------------------------- */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, 8%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-5%, 4%, 0) scale(0.95);
+  }
+}
+.animate-drift {
+  animation: drift 18s ease-in-out infinite;
+}
+.animate-drift-reverse {
+  animation: drift 22s ease-in-out infinite reverse;
+}
+
+@keyframes launch {
+  0% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-150%);
+  }
+  46% {
+    transform: translateY(150%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* --- WebGL hero canvas fades in once its first frame renders -------------- */
+.hero-canvas {
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+.hero-canvas[data-ready] {
+  opacity: 1;
+}
+
+/* --- Scroll progress: pure CSS scroll-driven animation -------------------- */
+.scroll-progress {
+  transform-origin: left;
+  transform: scaleX(0);
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
     }
+  }
+}
+@keyframes scroll-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* --- Nav links: underline wipes in from the left, out to the right -------- */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  right: var(--underline-inset-r, 1rem);
+  bottom: 0.2rem;
+  left: var(--underline-inset-l, 1.25rem);
+  height: 1px;
+  background: var(--color-brand);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-underline:hover::after,
+.nav-underline[aria-current="page"]::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* --- Home services: rows stack while scrolling (large, tall screens) ------ */
+@media (min-width: 80rem) and (min-height: 45rem) {
+  html.motion .stack-card {
+    position: sticky;
+    top: 7rem;
+    transform-origin: 50% 0;
+    box-shadow: 0 -16px 40px -28px rgb(12 13 14 / 0.3);
+  }
 }
