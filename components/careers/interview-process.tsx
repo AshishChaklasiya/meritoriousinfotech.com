@@ -74,7 +74,7 @@ export function InterviewProcessSection() {
                 <h3 className="text-2xl leading-[1.3] font-medium tracking-[-0.031em] text-ink-strong">
                   {step.title}
                 </h3>
-                <p className="text-base leading-[26px] text-[#4A4A4A]">
+                <p className="text-base leading-[26px] text-ink/75">
                   {step.description}
                 </p>
               </div>

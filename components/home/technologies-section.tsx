@@ -3,9 +3,9 @@ import { Marquee } from "@/components/ui/marquee"
 
 const TECH_ROWS = [
   [
-    "React. JS",
-    "Node. JS",
-    "Java Script",
+    "React.js",
+    "Node.js",
+    "JavaScript",
     "Angular",
     "Python",
     "C#",
@@ -15,9 +15,9 @@ const TECH_ROWS = [
   ],
   [
     "LangChain",
-    "My SQL",
+    "MySQL",
     "Claude",
-    "Mongo DB",
+    "MongoDB",
     "TensorFlow",
     "GPT",
     "Oracle",
@@ -28,7 +28,7 @@ const TECH_ROWS = [
 
 function TechPill({ label }: { label: string }) {
   return (
-    <span className="flex min-w-[107px] items-center justify-center rounded-card border border-divider bg-surface px-3.5 py-4 font-tech text-body-sm leading-[1.3] font-medium whitespace-nowrap text-black transition-[color,border-color,translate] duration-300 hover:-translate-y-1 hover:border-brand hover:text-brand">
+    <span className="flex min-w-[107px] items-center justify-center rounded-card border border-divider bg-surface px-3.5 py-4 font-tech text-body-sm leading-[1.3] font-medium whitespace-nowrap text-ink transition-[color,border-color,translate] duration-300 hover:-translate-y-1 hover:border-brand hover:text-brand">
       {label}
     </span>
   )
@@ -43,9 +43,10 @@ export function TechnologiesSection() {
       <div className="container-content flex flex-col gap-11">
         <SectionHeader
           id="technologies-title"
+          index="07"
           eyebrow="Technology stack"
-          title="Our Technologies we specialize in Development"
-          description="We leverage the industry's most advanced frameworks and languages to design scalable, secure, and future-proof digital solutions."
+          title="Technologies We Work With"
+          description="We pick the stack that suits your project, budget and in-house team, not just the one we like. These are the tools we use most."
           titleClassName="max-w-[647px]"
           descriptionClassName="max-w-[480px]"
         />
@@ -67,7 +68,7 @@ export function TechnologiesSection() {
             <div
               key={index}
               data-parallax-x={index % 2 === 1 ? -4 : 4}
-              data-velocity-skew
+              data-velocity="skew"
             >
               <Marquee
                 reverse={index % 2 === 1}

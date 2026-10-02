@@ -35,6 +35,8 @@ export function HeroMotion() {
         const [accent] = q("[data-hero-el='accent']")
         const [lead] = q("[data-hero-el='lead']")
         const [cta] = q("[data-hero-el='cta']")
+        const [meta] = q("[data-hero-el='meta']")
+        const decodes = q("[data-hero-el='meta'] [data-decode]")
         const glows = q("[data-hero-glow]")
         const accentText = accent?.textContent ?? ""
 
@@ -68,7 +70,7 @@ export function HeroMotion() {
           )
           .from(
             titleSplit.split.words,
-            { yPercent: 115, duration: 1.3, stagger: 0.07 },
+            { yPercent: 115, opacity: 0, duration: 1.3, stagger: 0.07 },
             0.05
           )
           .fromTo(
@@ -107,6 +109,25 @@ export function HeroMotion() {
             },
             0.75
           )
+          // Telemetry strip settles in last, its values decoding
+          .fromTo(
+            meta ?? [],
+            { autoAlpha: 0, y: 8 },
+            { autoAlpha: 1, y: 0, duration: 0.8 },
+            1
+          )
+        decodes.forEach((el, index) =>
+          gsap.to(el, {
+            delay: 1.05 + index * 0.12,
+            duration: 0.7,
+            ease: "none",
+            scrambleText: {
+              text: el.textContent ?? "",
+              chars: SCRAMBLE_CHARS,
+              speed: 0.8,
+            },
+          })
+        )
       }, section)
     })
 

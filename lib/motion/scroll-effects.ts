@@ -15,11 +15,14 @@ import { hasFinePointer } from "@/lib/motion/env"
  * attributes; this module wires them up per route and reverts on navigation.
  *
  *   data-anim="fade-up | fade | lines | words | scramble | stagger | draw |
- *              image | wordmark | counter"
+ *              trace | index | image | wordmark | counter"
  *   data-delay="0.2"             extra delay (s) for entrances
+ *   data-sequence                entrances inside share this element's trigger,
+ *                                so their delays play as one choreography
  *   data-parallax="8"            scroll-scrubbed yPercent drift (±value)
  *   data-parallax-x="6"          scroll-scrubbed xPercent drift (±value)
- *   data-velocity-skew           skews with scroll velocity
+ *   data-velocity="skew | stretch | shift"  reacts to scroll speed, settles
+ *                                when scrolling stops (desktop only)
  *   data-magnetic="0.3"          pulls toward the pointer (fine pointers)
  *   data-tilt="6"                3D tilt toward the pointer (fine pointers)
  *   data-scramble-hover          re-decodes its text when its card is hovered
@@ -27,6 +30,12 @@ import { hasFinePointer } from "@/lib/motion/env"
  *
  * Hidden initial states live in globals.css under `html.motion`, so nothing
  * flashes before hydration and everything is visible without JS.
+ *
+ * Transform ownership: once GSAP transforms an element it writes
+ * `translate/rotate/scale: none` inline, which silences CSS `translate`/`scale`
+ * utilities on that same element. So an element's transform has ONE owner —
+ * GSAP-driven elements (magnetic, tilt) get their press/lift from GSAP here,
+ * and CSS hover/depth layers live on wrappers or children GSAP never touches.
  */
 
 const DESKTOP = "(min-width: 1024px)"
@@ -39,9 +48,24 @@ function markRevealed(el: Element) {
   el.setAttribute("data-revealed", "")
 }
 
-/** Fires once when the element scrolls into view (or is already in view). */
+/**
+ * Fires once when the element scrolls into view (or is already in view).
+ * Inside a `[data-sequence]` the group is the trigger, so siblings start
+ * together and their `data-delay`s form one choreographed sequence.
+ */
 function onEnter(el: Element, play: () => void, start = "top 88%") {
-  ScrollTrigger.create({ trigger: el, start, once: true, onEnter: play })
+  const trigger = el.closest("[data-sequence]") ?? el
+  ScrollTrigger.create({ trigger, start, once: true, onEnter: play })
+}
+
+/**
+ * Pointer-driven elements (tilt/magnetic) own their transform; an entrance's
+ * `clearProps: "transform"` would wipe their live rotation, so skip those.
+ */
+const INTERACTIVE = "[data-tilt], [data-magnetic]"
+function settle(targets: Element[]) {
+  const plain = targets.filter((el) => !el.matches(INTERACTIVE))
+  if (plain.length) gsap.set(plain, { clearProps: "transform" })
 }
 
 type Tuning = { distance: number; duration: number }
@@ -62,8 +86,10 @@ function entrances(root: ParentNode, { distance, duration }: Tuning) {
               y: 0,
               duration,
               delay,
-              clearProps: "transform",
-              onComplete: () => markRevealed(el),
+              onComplete: () => {
+                settle([el])
+                markRevealed(el)
+              },
             }
           )
         )
@@ -95,6 +121,7 @@ function entrances(root: ParentNode, { distance, duration }: Tuning) {
           gsap.set(el, { autoAlpha: 1 })
           gsap.from(byWord ? split.words : split.lines, {
             yPercent: 115,
+            opacity: 0,
             duration: duration * 1.15,
             delay,
             stagger: byWord ? 0.045 : 0.09,
@@ -111,14 +138,71 @@ function entrances(root: ParentNode, { distance, duration }: Tuning) {
       case "scramble": {
         const text = el.textContent ?? ""
         onEnter(el, () => {
-          gsap.set(el, { autoAlpha: 1 })
+          // Label fades in, lifts a few px and decodes into place
+          gsap.fromTo(
+            el,
+            { autoAlpha: 0, y: 6 },
+            { autoAlpha: 1, y: 0, duration: 0.6, delay, ease: "power3.out" }
+          )
           gsap.to(el, {
-            duration: 0.9,
+            duration: 0.8,
             delay,
             ease: "none",
             scrambleText: { text, chars: SCRAMBLE_CHARS, speed: 0.6 },
             onComplete: () => markRevealed(el),
           })
+        })
+        break
+      }
+
+      case "index": {
+        // Section number: digits flicker briefly, then settle (very fast)
+        const text = el.textContent ?? ""
+        onEnter(el, () => {
+          gsap.set(el, { autoAlpha: 1 })
+          gsap.to(el, {
+            duration: 0.45,
+            delay,
+            ease: "none",
+            scrambleText: { text, chars: "0123456789", speed: 1 },
+            onComplete: () => markRevealed(el),
+          })
+        })
+        break
+      }
+
+      case "trace": {
+        // ●──────▬  dot appears, rule draws out of it, a tick rides the
+        // leading edge and parks at the end
+        const dot = el.querySelector("[data-trace-dot]")
+        const line = el.querySelector<HTMLElement>("[data-trace-line]")
+        const tick = el.querySelector<HTMLElement>("[data-trace-tick]")
+        onEnter(el, () => {
+          gsap.set(el, { autoAlpha: 1 })
+          const run = duration * 1.3
+          const tl = gsap.timeline({
+            delay,
+            onComplete: () => markRevealed(el),
+          })
+          if (dot) {
+            tl.from(dot, { scale: 0, duration: 0.4, ease: "back.out(3)" }, 0)
+          }
+          if (line) {
+            tl.fromTo(
+              line,
+              { scaleX: 0 },
+              { scaleX: 1, duration: run, ease: EASE.inOut },
+              0.1
+            )
+          }
+          if (line && tick) {
+            tl.fromTo(
+              tick,
+              { x: () => -(line.offsetWidth - tick.offsetWidth), opacity: 0 },
+              { x: 0, opacity: 1, duration: run, ease: EASE.inOut },
+              0.1
+            )
+          }
         })
         break
       }
@@ -136,8 +220,10 @@ function entrances(root: ParentNode, { distance, duration }: Tuning) {
               duration,
               delay,
               stagger: { each: 0.09, grid: "auto", from: "start" },
-              clearProps: "transform",
-              onComplete: () => markRevealed(el),
+              onComplete: () => {
+                settle(items)
+                markRevealed(el)
+              },
             }
           )
         })
@@ -207,7 +293,8 @@ function entrances(root: ParentNode, { distance, duration }: Tuning) {
               value: target,
               duration: 2,
               delay,
-              ease: "power3.out",
+              // Overshoots a hair and settles — an instrument needle, not a tick
+              ease: "back.out(1.1)",
               onUpdate: () => {
                 el.textContent = String(Math.round(counter.value))
               },
@@ -256,7 +343,8 @@ function parallax(root: ParentNode, factor: number) {
           trigger: el.parentElement ?? el,
           start: "top bottom",
           end: "bottom top",
-          scrub: true,
+          // Numeric scrub: catches up over 0.6s, so it settles, never stops dead
+          scrub: 0.6,
         },
       }
     )
@@ -281,26 +369,53 @@ function parallax(root: ParentNode, factor: number) {
   })
 }
 
-/** Rows lean into fast scrolling and settle when it stops. */
-function velocitySkew(root: ParentNode) {
-  const targets = root.querySelectorAll<HTMLElement>("[data-velocity-skew]")
-  if (!targets.length) return
+/**
+ * One scroll-velocity signal for every speed-reactive element. Fast scrolling
+ * pushes a value in [-1, 1]; it eases back to 0 when scrolling stops, so
+ * things lean, stretch or trail and then settle. Direction flips naturally.
+ *
+ *   skew     marquee rows lean (skewX, ±5deg)
+ *   stretch  short decorative rules stretch (scaleX, up to +60%)
+ *   shift    labels trail by a few px (y, ±4px)
+ *   images   revealed images lag a touch behind the page (y, ±8px)
+ */
+function velocity(root: ParentNode) {
+  const pick = (mode: string) =>
+    Array.from(root.querySelectorAll(`[data-velocity="${mode}"]`))
+  const skew = pick("skew")
+  const stretch = pick("stretch")
+  const shift = pick("shift")
+  const images = Array.from(
+    root.querySelectorAll("[data-anim='image'] [data-anim-inner]")
+  )
+  if (!skew.length && !stretch.length && !shift.length && !images.length) return
 
-  const proxy = { skew: 0 }
-  const setSkew = gsap.quickSetter(targets, "skewX", "deg")
-  const clamp = gsap.utils.clamp(-6, 6)
+  const setters = [
+    skew.length && gsap.quickSetter(skew, "skewX", "deg"),
+    stretch.length && gsap.quickSetter(stretch, "scaleX"),
+    shift.length && gsap.quickSetter(shift, "y", "px"),
+    images.length && gsap.quickSetter(images, "y", "px"),
+  ]
+  const apply = (v: number) => {
+    if (setters[0]) setters[0](-v * 5)
+    if (setters[1]) setters[1](1 + Math.abs(v) * 0.6)
+    if (setters[2]) setters[2](v * 4)
+    if (setters[3]) setters[3](v * 8)
+  }
 
+  const proxy = { v: 0 }
+  const clamp = gsap.utils.clamp(-1, 1)
   ScrollTrigger.create({
     onUpdate(self) {
-      const skew = clamp(self.getVelocity() / -400)
-      if (Math.abs(skew) > Math.abs(proxy.skew)) {
-        proxy.skew = skew
+      const v = clamp(self.getVelocity() / 2400)
+      if (Math.abs(v) > Math.abs(proxy.v)) {
+        proxy.v = v
         gsap.to(proxy, {
-          skew: 0,
-          duration: 0.8,
+          v: 0,
+          duration: 0.9,
           ease: "power3",
           overwrite: true,
-          onUpdate: () => setSkew(proxy.skew),
+          onUpdate: () => apply(proxy.v),
         })
       }
     },
@@ -314,6 +429,15 @@ function magnetic(root: ParentNode, cleanups: Cleanup[]) {
     const strength = Number(el.dataset.magnetic || 0.3)
     const xTo = gsap.quickTo(el, "x", { duration: 0.6, ease: EASE.follow })
     const yTo = gsap.quickTo(el, "y", { duration: 0.6, ease: EASE.follow })
+    // The label drifts a little further than its button, so the two layers
+    // separate slightly under the pointer
+    const label = el.querySelector<HTMLElement>("[data-magnetic-label]")
+    const lxTo = label
+      ? gsap.quickTo(label, "x", { duration: 0.7, ease: EASE.follow })
+      : null
+    const lyTo = label
+      ? gsap.quickTo(label, "y", { duration: 0.7, ease: EASE.follow })
+      : null
     let rect: DOMRect | null = null
 
     const enter = () => {
@@ -321,22 +445,39 @@ function magnetic(root: ParentNode, cleanups: Cleanup[]) {
     }
     const move = (event: PointerEvent) => {
       rect ??= el.getBoundingClientRect()
-      xTo((event.clientX - (rect.left + rect.width / 2)) * strength)
-      yTo((event.clientY - (rect.top + rect.height / 2)) * strength)
+      const dx = event.clientX - (rect.left + rect.width / 2)
+      const dy = event.clientY - (rect.top + rect.height / 2)
+      xTo(dx * strength)
+      yTo(dy * strength)
+      lxTo?.(dx * strength * 0.35)
+      lyTo?.(dy * strength * 0.35)
     }
+    // Press: settle to 0.97, then ease back (GSAP owns this transform, so
+    // the CSS active:scale fallback can't apply here)
+    const press = () =>
+      gsap.to(el, { scale: 0.97, duration: 0.12, ease: "power2.out" })
+    const release = () =>
+      gsap.to(el, { scale: 1, duration: 0.45, ease: "back.out(2.5)" })
     const leave = () => {
       rect = null
       xTo(0)
       yTo(0)
+      lxTo?.(0)
+      lyTo?.(0)
+      release()
     }
 
     el.addEventListener("pointerenter", enter)
     el.addEventListener("pointermove", move)
     el.addEventListener("pointerleave", leave)
+    el.addEventListener("pointerdown", press)
+    el.addEventListener("pointerup", release)
     cleanups.push(() => {
       el.removeEventListener("pointerenter", enter)
       el.removeEventListener("pointermove", move)
       el.removeEventListener("pointerleave", leave)
+      el.removeEventListener("pointerdown", press)
+      el.removeEventListener("pointerup", release)
     })
   })
 }
@@ -354,6 +495,9 @@ function tilt(root: ParentNode, cleanups: Cleanup[]) {
       ease: EASE.follow,
     })
 
+    // The card also lifts a few px while hovered (first layer of the hover)
+    const liftTo = gsap.quickTo(el, "y", { duration: 0.6, ease: EASE.follow })
+
     const move = (event: PointerEvent) => {
       const rect = el.getBoundingClientRect()
       const px = (event.clientX - rect.left) / rect.width - 0.5
@@ -361,14 +505,18 @@ function tilt(root: ParentNode, cleanups: Cleanup[]) {
       ryTo(px * max)
       rxTo(-py * max)
     }
+    const enter = () => liftTo(-4)
     const leave = () => {
       rxTo(0)
       ryTo(0)
+      liftTo(0)
     }
 
+    el.addEventListener("pointerenter", enter)
     el.addEventListener("pointermove", move)
     el.addEventListener("pointerleave", leave)
     cleanups.push(() => {
+      el.removeEventListener("pointerenter", enter)
       el.removeEventListener("pointermove", move)
       el.removeEventListener("pointerleave", leave)
     })
@@ -404,7 +552,7 @@ function stackScene(scene: HTMLElement) {
         trigger: cards[index + 1],
         start: "top bottom",
         end: "top 20%",
-        scrub: true,
+        scrub: 0.5,
       },
     })
     tl.to(card, { scale: 0.94, ease: "none" }, 0)
@@ -431,7 +579,12 @@ function processScene(scene: HTMLElement, pinned: boolean, tuning: Tuning) {
     return
   }
 
-  const section = scene.closest("section") ?? scene
+  // Pin the section's inner container, never the section itself: pinning
+  // wraps the target in a .pin-spacer, and if that target is a direct child
+  // of a React-owned parent (<main>), React's removeChild on route change
+  // throws before the effect cleanup can un-pin. Wrapping inside the section
+  // keeps the section — the node React removes — untouched.
+  const section = scene.parentElement ?? scene
   gsap.set(steps, { autoAlpha: 0.25 })
   gsap.set(rule, { scaleX: 0 })
 
@@ -452,10 +605,11 @@ function processScene(scene: HTMLElement, pinned: boolean, tuning: Tuning) {
     const badge = step.querySelector("[data-process-badge]")
     tl.to(step, { autoAlpha: 1, duration: 0.3 }, Math.max(0, index - 0.15))
     if (badge) {
+      // --lit mixes surface→brand in CSS, so the badge follows the theme
       tl.fromTo(
         badge,
-        { backgroundColor: "#ffffff", color: "#ff7c1a" },
-        { backgroundColor: "#ff7c1a", color: "#ffffff", duration: 0.3 },
+        { "--lit": 0 },
+        { "--lit": 1, duration: 0.3 },
         Math.max(0, index - 0.15)
       )
     }
@@ -476,7 +630,7 @@ function heroScene(scene: HTMLElement) {
       trigger: scene,
       start: "top top",
       end: "bottom top",
-      scrub: true,
+      scrub: 0.5,
     },
   })
 }
@@ -506,7 +660,8 @@ export function createScrollEffects(root: ParentNode = document): Cleanup {
 
       entrances(root, tuning)
       parallax(root, desktop ? 1 : 0.5)
-      velocitySkew(root)
+      // Touch momentum scrolling + speed effects read as jitter: desktop only
+      if (desktop) velocity(root)
 
       root.querySelectorAll<HTMLElement>("[data-scene]").forEach((scene) => {
         switch (scene.dataset.scene) {

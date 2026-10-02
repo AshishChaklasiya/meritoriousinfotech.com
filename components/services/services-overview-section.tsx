@@ -19,26 +19,26 @@ function MonitorLargeIcon(props: SVGProps<SVGSVGElement>) {
 const SERVICES: ServiceOverview[] = [
   {
     icon: PenToolIcon,
-    title: "Graphic & UI/UX System Design",
+    title: "UI/UX & Graphic Design",
     description:
-      "Bringing your product vision into crystal clarity. We construct cohesive design systems, atomic UI components, and accessible digital touchpoint that command authority in saturated industries.",
-    tags: ["Figma", "Photoshop", "Illustrator", "XD"],
+      "Brand identities, website and app interfaces, and clickable prototypes that show how your product will work before development starts.",
+    tags: ["Figma", "Photoshop", "Illustrator"],
     href: "/services/graphic-ui-ux-design",
   },
   {
     icon: MonitorLargeIcon,
-    title: "Web Engineering & Platforms",
+    title: "Web Development",
     description:
-      "Build and own automated QA pipelines for our web and mobile products. Manual + automation, with a craft mindset.",
-    tags: ["NODE", "React Native", "DJANGO", "POSTGRES"],
+      "Business websites, online stores, customer portals and web applications that are fast, easy to update and built to be found on Google.",
+    tags: ["React", "Node.js", "Laravel", "WordPress"],
     href: "/services/web-engineering-platforms",
   },
   {
     icon: DeviceMobileIcon,
     title: "Mobile App Development",
     description:
-      "Native and hybrid applications engineered with surgical precision. Smooth 60 FPS transitions, battery-optimized background synchronizations, and seamless platform-specific APIs.",
-    tags: ["Android", "IOS", "Flutter", "ReactNative"],
+      "Android, iOS and cross-platform apps, from a first MVP to a product used every day, with store launch and ongoing support included.",
+    tags: ["Android", "iOS", "Flutter", "React Native"],
     href: "/services/mobile-app-development",
   },
 ]
@@ -58,9 +58,10 @@ export function ServicesOverviewSection() {
             key={title}
             data-pointer
             data-tilt="4"
-            className="group/service spotlight flex flex-col gap-6 border border-divider bg-surface p-6 transition-colors duration-200 hover:bg-ink sm:p-8"
+            data-cursor="Explore"
+            className="group/service spotlight flex flex-col gap-6 border border-divider bg-surface p-6 transition-colors duration-300 hover:bg-ink sm:p-8"
           >
-            <span className="flex size-12 items-center justify-center border border-ink-strong text-ink transition-[color,background-color,border-color,rotate] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/service:-rotate-6 group-hover/service:border-brand group-hover/service:bg-brand group-hover/service:text-surface">
+            <span className="flex size-12 items-center justify-center border border-ink-strong text-ink transition-[color,background-color,border-color,rotate] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/service:-rotate-6 group-hover/service:border-brand group-hover/service:bg-brand group-hover/service:text-snow">
               <Icon className="size-6" />
             </span>
             {/* Grows so tags + link align across cards (Figma: equal-height copy) */}
@@ -70,11 +71,14 @@ export function ServicesOverviewSection() {
               </h2>
               <p className="text-body text-grey-1">{description}</p>
             </div>
-            <ul aria-label="Tools" className="flex flex-wrap gap-x-4 gap-y-2">
+            <ul
+              aria-label="Tools"
+              className="flex flex-wrap gap-x-4 gap-y-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/service:translate-x-1"
+            >
               {tags.map((tag) => (
                 <li
                   key={tag}
-                  className="border border-divider px-2.5 py-1 text-xs leading-[15px] font-medium text-grey-1 transition-colors group-hover/service:border-divider-inverse"
+                  className="border border-divider px-2.5 py-1 text-xs leading-[15px] font-medium text-grey-1 transition-colors group-hover/service:border-surface/20"
                 >
                   {tag}
                 </li>

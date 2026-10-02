@@ -144,7 +144,7 @@ export const JOBS: Job[] = [
   },
   {
     slug: "ui-ux-designer",
-    title: "UI&UX Designer",
+    title: "UI/UX Designer",
     icon: DesignerIcon,
     meta: META,
     summary: QA_SUMMARY,

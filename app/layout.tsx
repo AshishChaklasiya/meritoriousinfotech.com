@@ -1,5 +1,6 @@
+import type { Viewport } from "next"
 import { JetBrains_Mono, Manrope, Outfit } from "next/font/google"
-import { siteConfig, constructMetadata } from "@/lib/metadata"
+import { constructMetadata } from "@/lib/metadata"
 
 import "./globals.css"
 import { MotionRoot } from "@/components/motion/motion-root"
@@ -40,6 +41,11 @@ const MOTION_BOOT = `(function(){try{var d=document.documentElement;if(matchMedi
 // Set up default metadata for the entire application.
 export const metadata = constructMetadata()
 
+// Browser UI (mobile address bar) matches the default light canvas
+export const viewport: Viewport = {
+  themeColor: "#f9f9f8",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -64,7 +70,11 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT }} />
       </head>
       <body>
-        {/* The design system is light-only; don't follow the OS theme */}
+        <OrganizationSchema />
+        <LocalBusinessSchema />
+        {/* Always opens in light; dark only when the visitor picks it (header
+            toggle / "D" key). The OS preference is ignored; next-themes
+            persists the visitor's choice */}
         <ThemeProvider defaultTheme="light" enableSystem={false}>
           {children}
           <MotionRoot />

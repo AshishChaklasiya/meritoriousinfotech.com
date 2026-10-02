@@ -3,24 +3,41 @@ import type { ReactNode } from "react"
 import { ContactForm } from "@/components/contact/contact-form"
 import { PageHero } from "@/components/layout/page-hero"
 import { SOCIAL_LINKS } from "@/components/layout/site-footer"
+import {
+  COMMITMENTS,
+  CONTACT,
+  FULL_ADDRESS,
+  telHref,
+} from "@/lib/content/company"
 import { constructMetadata } from "@/lib/metadata"
 
-const DESCRIPTION =
-  "Ready to streamline your IT needs and unlock new possibilities? We’re here to help! Contact us today for a free consultation. Our IT professionals are ready to talk about your specific goals and create a solution that is specifically suited to your company’s needs."
+const DESCRIPTION = `Tell us what you're planning. We reply within one working day, and after a short call we'll send a price range and timeline within ${COMMITMENTS.estimateHours} hours. Prefer to talk now? Call or WhatsApp ${CONTACT.phones[0]}.`
 
 export const metadata = constructMetadata({
-  title: "Contact Us",
-  description: DESCRIPTION,
+  title: "Contact Us – Get a Project Estimate",
+  description: `Tell us about your website, app or software project. We reply within one working day and send a price range within ${COMMITMENTS.estimateHours} hours. Call ${CONTACT.phones[0]}.`,
   canonicalUrl: "/contact",
 })
 
-const PHONES = ["+91 99795-07813", "+91 87801-44391"]
-const EMAILS = ["info@meritoriousinfotech.com", "hr@meritoriousinfotech.com"]
-const ADDRESS =
-  "401 - 4th Floor, 1/954 Palia street, Nanpura, Surat - 395001, Gujarat, India"
+const EMAILS = [CONTACT.emails.business, CONTACT.emails.hr]
 const MAP_SRC = `https://www.google.com/maps?q=${encodeURIComponent(
-  `Meritorious Infotech, ${ADDRESS}`
+  `Meritorious Infotech, ${FULL_ADDRESS}`
 )}&output=embed`
+
+const NEXT_STEPS = [
+  {
+    when: "Within one working day",
+    text: "We reply with a few questions, or suggest a time for a call.",
+  },
+  {
+    when: "A 30-minute call",
+    text: "We talk through your goals, users, must-have features and budget.",
+  },
+  {
+    when: `Within ${COMMITMENTS.estimateHours} hours of the call`,
+    text: "You receive a price range, a suggested approach and a timeline.",
+  },
+]
 
 function InfoBlock({
   title,
@@ -45,7 +62,7 @@ export default function ContactPage() {
       <PageHero
         title={
           <>
-            Let’s Build Something <span className="text-brand">Great</span>
+            Let’s Talk About Your <span className="text-brand">Project</span>
           </>
         }
         titleClassName="max-w-[900px]"
@@ -64,12 +81,12 @@ export default function ContactPage() {
               className="grid gap-10 not-italic sm:grid-cols-2 lg:flex lg:shrink-0 lg:justify-between lg:gap-8"
             >
               <div className="flex flex-col gap-10 lg:min-w-[200px] lg:gap-[61px] lg:p-2.5">
-                <InfoBlock title="Call Center">
+                <InfoBlock title="Call or WhatsApp">
                   <ul>
-                    {PHONES.map((phone) => (
+                    {CONTACT.phones.map((phone) => (
                       <li key={phone}>
                         <a
-                          href={`tel:${phone.replace(/[\s-]/g, "")}`}
+                          href={telHref(phone)}
                           className="transition-colors hover:text-brand"
                         >
                           {phone}
@@ -95,8 +112,8 @@ export default function ContactPage() {
               </div>
 
               <div className="flex flex-col gap-10 lg:w-[280px] lg:gap-[31px] lg:pt-2 lg:pl-5">
-                <InfoBlock title="Our Location">
-                  <p>{ADDRESS}</p>
+                <InfoBlock title="Visit our office">
+                  <p>{FULL_ADDRESS}</p>
                 </InfoBlock>
                 <InfoBlock title="Social network">
                   <ul className="flex gap-3.5 pt-1">
@@ -129,6 +146,30 @@ export default function ContactPage() {
           </div>
 
           <div
+            data-anim="fade-up"
+            className="flex flex-col gap-6 border-t border-divider pt-10"
+          >
+            <h2 className="text-h4 font-semibold text-ink">
+              What happens next
+            </h2>
+            <ol className="grid gap-6 md:grid-cols-3">
+              {NEXT_STEPS.map((step, index) => (
+                <li key={step.when} className="flex gap-4">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[2px] text-base font-semibold text-brand outline outline-1 outline-brand">
+                    {index + 1}
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-title font-medium text-ink">
+                      {step.when}
+                    </p>
+                    <p className="text-body text-grey-1">{step.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div
             data-anim="image"
             className="h-[320px] border border-divider p-3 md:h-[463px]"
           >
@@ -137,7 +178,9 @@ export default function ContactPage() {
               src={MAP_SRC}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="size-full border-0 grayscale-[0.2]"
+              // Cross-origin map can't be themed; in dark mode invert it and
+              // rotate hues back so water stays blue and parks stay green
+              className="size-full border-0 grayscale-[0.2] dark:brightness-90 dark:hue-rotate-180 dark:invert"
             />
           </div>
         </div>

@@ -4,6 +4,9 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+const brandMotion =
+  "relative isolate overflow-hidden before:absolute before:inset-0 before:-z-10 before:origin-right before:scale-x-0 before:transition-transform before:duration-500 before:ease-[cubic-bezier(0.16,1,0.3,1)] hover:before:origin-left hover:before:scale-x-100 active:scale-[0.97] motion-reduce:before:transition-none motion-reduce:active:scale-100"
+
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-xs/relaxed font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
@@ -21,10 +24,16 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         // Figma "Link" / "Action Button → Link" component sets: orange fill with
         // a hard offset shadow; hover swaps to white fill + divider border.
-        brand:
-          "rounded-none bg-brand text-surface shadow-brutal hover:border-divider hover:bg-surface hover:text-ink hover:shadow-none",
-        "brand-inverse":
-          "rounded-none bg-brand text-surface shadow-brutal-inverse hover:border-divider hover:bg-surface hover:text-ink hover:shadow-none",
+        // Hover fill wipes in from the left (same end state as the Figma
+        // hover); press settles the button to 0.97.
+        brand: cn(
+          "rounded-none bg-brand text-snow shadow-brutal before:bg-surface hover:border-divider hover:text-ink hover:shadow-none",
+          brandMotion
+        ),
+        "brand-inverse": cn(
+          "rounded-none bg-brand text-snow shadow-brutal-inverse before:bg-snow hover:border-divider hover:text-night hover:shadow-none",
+          brandMotion
+        ),
       },
       size: {
         default:

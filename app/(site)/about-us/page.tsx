@@ -2,6 +2,7 @@ import {
   CultureSection,
   MissionVisionSection,
   TeamSection,
+  ValuesSection,
 } from "@/components/about/about-sections"
 import { ArrowRightIcon, ArrowUpRightSolidIcon } from "@/components/icons"
 import { PageHero } from "@/components/layout/page-hero"
@@ -10,9 +11,9 @@ import { CtaLink } from "@/components/ui/cta-link"
 import { constructMetadata } from "@/lib/metadata"
 
 export const metadata = constructMetadata({
-  title: "About Us",
+  title: "About Our Surat Software Team",
   description:
-    "We take your vision, shape it into something powerful, and create results that leave a lasting mark on our clients and their industry.",
+    "Meritorious Infotech is an IT company in Surat, Gujarat, building websites, apps and software since 2014. A small senior team you work with directly.",
   canonicalUrl: "/about-us",
 })
 
@@ -39,7 +40,7 @@ export default function AboutPage() {
             <span className="text-brand">Meritorious</span> Infotech
           </>
         }
-        description="We take your vision, shape it into something powerful, and create results that leave a lasting mark on our clients and their industry."
+        description="Meritorious Infotech is a design and software development company in Nanpura, Surat. Since 2014, our team has built websites, mobile apps and business software for clients in India and abroad. We stay deliberately small, so every client works directly with the people doing the work."
         descriptionClassName="max-w-[792px]"
         action={
           <CtaLink
@@ -47,12 +48,13 @@ export default function AboutPage() {
             icon={<ArrowUpRightSolidIcon />}
             hoverIcon={<ArrowRightIcon />}
           >
-            Let’s Discuss opportunity
+            Let’s discuss your project
           </CtaLink>
         }
       />
 
       <MissionVisionSection />
+      <ValuesSection />
       <TeamSection />
       <CultureSection />
     </>

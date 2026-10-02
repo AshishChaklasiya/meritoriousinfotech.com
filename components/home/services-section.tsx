@@ -21,84 +21,84 @@ type ServiceGroup = {
 
 const SERVICE_GROUPS: ServiceGroup[] = [
   {
-    kicker: "Visual Architecture",
-    title: "Graphic & UI/UX System\nDesign",
+    kicker: "Design",
+    title: "UI/UX & Graphic\nDesign",
     description:
-      "Bringing your product vision into crystal clarity. We construct cohesive design systems, atomic UI components, and accessible digital touchpoint that command authority in saturated industries.",
-    spec: "Spec:  Figma • Photoshop • Illustrator",
+      "Brand identities, app and website interfaces, and clickable prototypes you can test with real users before a line of code is written.",
+    spec: "Tools:  Figma • Illustrator • Photoshop",
     modules: [
       {
         code: "UX",
         title: "User Experience Design",
         description:
-          "Information architecture, cognitive flow mapping, and usability testing.",
+          "Research, user flows and wireframes that make the next step obvious.",
         href: "/services/graphic-ui-ux-design#elevating-user-experiences",
       },
       {
         code: "UI",
-        title: "User Interface Systems",
+        title: "Interface Design",
         description:
-          "Pixel-precise component kits, responsive layouts, and unified design tokens.",
+          "Screens, components and a design system developers can build from directly.",
         href: "/services/graphic-ui-ux-design#craft-exceptional-user-interfaces",
       },
       {
-        code: "CUSTOM",
-        title: "Custom Web Design",
+        code: "BRAND",
+        title: "Brand & Graphic Design",
         description:
-          "Bespoke digital experiences tailored for conversion and branding resonance.",
+          "Logos, brand guidelines, brochures and social templates that match your product.",
         href: "/services/graphic-ui-ux-design#custom-web-design-services",
       },
       {
         code: "PROTO",
-        title: "Interactive Prototyping",
+        title: "Prototyping",
         description:
-          "High-fidelity animated prototypes validating user journeys prior to deployment.",
+          "Clickable prototypes for testing ideas and pitching investors before you build.",
         href: "/services/graphic-ui-ux-design#ui-prototyping-services",
       },
     ],
   },
   {
-    kicker: "Full Stack Engineering",
-    title: "Web Engineering &\nPlatforms",
+    kicker: "Web",
+    title: "Web\nDevelopment",
     description:
-      "Tailored web solutions configured for microsecond response times and high concurrency. From headless commerce platforms to bespoke operational SaaS and headless CMS environments.",
-    spec: "Stack: Node • React • Django • Postgres",
+      "Business websites, online stores, customer portals and web applications that load fast, rank well and are easy for your team to update.",
+    spec: "Stack: React • Angular • Node.js • Laravel • Python",
     modules: [
       {
         code: "MOD_CMS",
-        title: "CMS Solutions",
+        title: "Business Websites & CMS",
         description:
-          "Modular CMS installations designed for speed and autonomy.",
+          "Sites your team edits itself, without calling a developer for every change.",
         href: "/services/web-engineering-platforms#efficient-cms-solutions",
       },
       {
         code: "MOD_ECOM",
-        title: "E-Commerce Solutions",
+        title: "E-commerce",
         description:
-          "Cart pipelines with automated payment gateway fault-tolerance.",
+          "Shopify, WooCommerce and custom stores with Indian and international payments.",
         href: "/services/web-engineering-platforms#tailored-ecommerce-solutions",
       },
       {
-        code: "MOD_BACK",
-        title: "Backend Development",
+        code: "MOD_APPS",
+        title: "Web Apps & Portals",
         description:
-          "Bespoke digital experiences tailored for conversion and branding resonance.",
-        href: "/services/web-engineering-platforms#powerful-backend-development",
+          "Dashboards, booking systems, B2B portals and internal tools built around your workflow.",
+        href: "/services/web-engineering-platforms#accelerating-your-development",
       },
       {
-        code: "MOD_FRONT",
-        title: "Frontend Development",
+        code: "MOD_BACK",
+        title: "Backend & APIs",
         description:
-          "SPA/SSR frameworks with sub-second page loads and clean state trees.",
-        href: "/services/web-engineering-platforms#dynamic-frontend-development",
+          "Secure databases and connections to the accounting, CRM and payment tools you use.",
+        href: "/services/web-engineering-platforms#powerful-backend-development",
       },
     ],
   },
   {
-    kicker: "Mobile Runtimes",
+    kicker: "Mobile",
     title: "Mobile App Development",
     description:
-      "Native and hybrid applications engineered with surgical precision. Smooth 60 FPS transitions, battery-optimized background synchronizations, and seamless platform-specific APIs.",
+      "Android and iOS apps, from a first MVP to a product with thousands of users. We build native when performance matters most, and cross-platform when budget and speed matter more.",
     spec: "Targets: iOS • Android • Cross-platform",
     compact: true,
     modules: [
@@ -135,11 +135,11 @@ function ModuleCard({ module }: { module: Module }) {
     <div
       data-pointer
       data-hover-group
-      className="group/module spotlight flex flex-col gap-1.5 rounded-card border border-divider bg-surface p-6 transition-colors duration-200 hover:border-divider/10 hover:bg-ink"
+      className="group/module spotlight flex flex-col gap-1.5 rounded-card border border-divider bg-surface p-6 transition-[color,background-color,border-color,translate] duration-300 hover:-translate-y-0.5 hover:border-divider/10 hover:bg-ink"
     >
       <p
         data-scramble-hover
-        className="font-mono text-eyebrow tracking-normal text-grey-1"
+        className="font-mono text-eyebrow tracking-normal text-grey-1 transition-[translate,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/module:translate-x-1 group-hover/module:text-brand"
       >
         {module.code}
       </p>
@@ -173,7 +173,7 @@ function ServiceGroupRow({ group }: { group: ServiceGroup }) {
       <span
         aria-hidden="true"
         data-stack-shade
-        className="pointer-events-none absolute inset-0 z-10 bg-ink/[0.07] opacity-0"
+        className="pointer-events-none absolute inset-0 z-10 bg-night/[0.07] opacity-0 dark:bg-night/45"
       />
       <div
         data-anim="fade-up"
@@ -222,9 +222,10 @@ export function ServicesSection() {
       <div data-scene="stack" className="container-content flex flex-col gap-8">
         <SectionHeader
           id="services-title"
-          eyebrow="Services & System Modules"
-          title={"Engineered for\nPerformance, Rigor &\nScale"}
-          description="Standardized engineering lifecycles. We build scalable backend fabrics, fluid interactive frontends, and unified enterprise applications."
+          index="01"
+          eyebrow="What we do"
+          title={"Design, Web and\nMobile Development\nUnder One Roof"}
+          description="Most projects need all three. With one team handling them, there are fewer handovers, decisions happen faster, and the finished product looks the way it was designed."
           divider
           descriptionClassName="max-w-[415px]"
         />

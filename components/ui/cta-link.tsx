@@ -15,7 +15,10 @@ type CtaLinkProps = ComponentProps<typeof Link> & {
 
 /**
  * Brand call-to-action link — Figma "Link" / "Action Button → Link" components.
- * Magnetic on fine pointers; the hover icon slides in as it swaps.
+ *
+ * Physical feedback: magnetic pull (fine pointers) with the label drifting a
+ * little further than the button, fill wipe on hover, 0.97 press, and the
+ * hover arrow slides in then nudges forward/back on its own.
  */
 export function CtaLink({
   variant = "brand",
@@ -34,12 +37,14 @@ export function CtaLink({
       data-magnetic="0.3"
       // Not transition-all: GSAP drives transform for the magnetic pull
       className={cn(
-        "transition-[color,background-color,border-color,box-shadow] duration-200",
+        "transition-[color,background-color,border-color,box-shadow,scale,translate] duration-200",
         className
       )}
     >
       <Link {...props}>
-        {children}
+        <span data-magnetic-label className="inline-block">
+          {children}
+        </span>
         {icon && (
           <span
             className={cn("contents", hoverIcon && "group-hover/button:hidden")}
@@ -48,7 +53,7 @@ export function CtaLink({
           </span>
         )}
         {hoverIcon && (
-          <span className="hidden group-hover/button:contents [&>svg]:animate-in [&>svg]:duration-300 [&>svg]:fade-in [&>svg]:slide-in-from-left-2">
+          <span className="hidden animate-in duration-300 fade-in slide-in-from-left-2 group-hover/button:inline-flex [&>svg]:arrow-nudge">
             {hoverIcon}
           </span>
         )}

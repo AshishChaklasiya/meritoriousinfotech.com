@@ -16,7 +16,10 @@ import {
   ServicesMegaMenu,
   ServicesMenuList,
 } from "@/components/layout/services-menu"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { CtaLink } from "@/components/ui/cta-link"
+import { prefersReducedMotion } from "@/lib/motion/env"
+import { gsap, SCRAMBLE_CHARS } from "@/lib/motion/gsap"
 import { cn } from "@/lib/utils"
 
 const NAV_LINKS = [
@@ -32,18 +35,17 @@ function isActive(href: string, pathname: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href)
 }
 
-function reducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
-}
-
+// Hover: text lifts 1px while the underline wipes in from the left
 const navItemClass =
-  "flex items-center gap-1.5 py-2 text-body-sm leading-[18px] tracking-[0.0686em] uppercase transition-colors"
+  "flex items-center gap-1.5 py-2 text-body-sm leading-[18px] tracking-[0.0686em] uppercase transition-[color,translate] duration-300 hover:-translate-y-px"
 
 export function SiteHeader() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
+  // Mobile panel stays mounted while its close choreography plays
+  const [closing, setClosing] = useState(false)
   const servicesRef = useRef<HTMLLIElement>(null)
   const servicesTriggerRef = useRef<HTMLButtonElement>(null)
   const megaMenuRef = useRef<HTMLDivElement>(null)
@@ -83,7 +85,7 @@ export function SiteHeader() {
 
   // Menu contents cascade in (anime.js: small, self-contained UI motion)
   useEffect(() => {
-    if (!servicesOpen || !megaMenuRef.current || reducedMotion()) return
+    if (!servicesOpen || !megaMenuRef.current || prefersReducedMotion()) return
     const animation = animate(
       megaMenuRef.current.querySelectorAll("#services-menu a"),
       {
@@ -99,22 +101,74 @@ export function SiteHeader() {
     }
   }, [servicesOpen])
 
+  // Mobile menu open: panel reveals → items stagger in → rule draws →
+  // status line decodes
   useEffect(() => {
-    if (!open || !mobileNavRef.current || reducedMotion()) return
-    const animation = animate(
-      mobileNavRef.current.querySelectorAll("ul > li"),
-      {
+    const nav = mobileNavRef.current
+    if (!open || !nav || prefersReducedMotion()) return
+    const animations = [
+      animate(nav, {
+        clipPath: ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"],
+        duration: 420,
+        ease: "outExpo",
+      }),
+      animate(nav.querySelectorAll("[data-menu-item]"), {
         opacity: [0, 1],
         translateX: [-16, 0],
         duration: 500,
-        delay: stagger(45),
+        delay: stagger(45, { start: 80 }),
         ease: "outExpo",
-      }
-    )
+      }),
+      animate(nav.querySelectorAll("[data-menu-rule]"), {
+        scaleX: [0, 1],
+        duration: 700,
+        delay: 250,
+        ease: "outExpo",
+      }),
+    ]
+    const meta = nav.querySelector("[data-menu-meta]")
+    const ctx = gsap.context(() => {
+      if (!meta) return
+      gsap.to(meta, {
+        duration: 0.6,
+        delay: 0.3,
+        ease: "none",
+        scrambleText: {
+          text: meta.textContent ?? "",
+          chars: SCRAMBLE_CHARS,
+          speed: 0.8,
+        },
+      })
+    })
     return () => {
-      animation.revert()
+      animations.forEach((animation) => animation.revert())
+      ctx.revert()
     }
   }, [open])
+
+  // Mobile menu close: the same choreography, reversed and quicker
+  useEffect(() => {
+    const nav = mobileNavRef.current
+    if (!closing || !nav) return
+    const items = animate(nav.querySelectorAll("[data-menu-item]"), {
+      opacity: 0,
+      translateX: -8,
+      duration: 180,
+      delay: stagger(25, { reversed: true }),
+      ease: "inQuad",
+    })
+    const panel = animate(nav, {
+      clipPath: ["inset(0% 0% 0% 0%)", "inset(0% 0% 100% 0%)"],
+      duration: 300,
+      delay: 120,
+      ease: "inOutQuad",
+    })
+    panel.then(() => setClosing(false))
+    return () => {
+      items.revert()
+      panel.revert()
+    }
+  }, [closing])
 
   // Close the desktop mega menu on outside click / Escape
   useEffect(() => {
@@ -141,8 +195,15 @@ export function SiteHeader() {
   }, [servicesOpen])
 
   function closeMobile() {
+    if (!open) return
     setOpen(false)
     setMobileServicesOpen(false)
+    if (!prefersReducedMotion()) setClosing(true)
+  }
+
+  function openMobile() {
+    setClosing(false)
+    setOpen(true)
   }
 
   return (
@@ -172,6 +233,16 @@ export function SiteHeader() {
             width={146}
             height={28}
             priority
+            className="dark:hidden"
+          />
+          {/* Light-text logo for the dark theme */}
+          <Image
+            src="/brand/logo-footer.svg"
+            alt="Meritorious Infotech"
+            width={146}
+            height={28}
+            unoptimized
+            className="hidden dark:block"
           />
         </Link>
 
@@ -273,33 +344,42 @@ export function SiteHeader() {
           >
             Contact Us
           </CtaLink>
+          <ThemeToggle />
           <button
             type="button"
             className="inline-flex size-10 items-center justify-center text-ink lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => (open ? closeMobile() : openMobile())}
           >
+            {/* Icons swap with a short turn; keyed so each swap replays */}
             {open ? (
-              <RiCloseLine className="size-6" />
+              <RiCloseLine
+                key="close"
+                className="size-6 animate-in duration-300 fade-in spin-in-90 motion-reduce:animate-none"
+              />
             ) : (
-              <RiMenuLine className="size-6" />
+              <RiMenuLine
+                key="menu"
+                className="size-6 animate-in duration-300 fade-in motion-reduce:animate-none"
+              />
             )}
           </button>
         </div>
       </div>
 
-      {open && (
+      {(open || closing) && (
         <nav
           ref={mobileNavRef}
           id="mobile-nav"
           aria-label="Mobile"
+          inert={closing}
           className="max-h-[calc(100svh-81px)] overflow-y-auto border-t border-divider bg-canvas lg:hidden"
         >
           <ul className="container-content flex flex-col py-4">
             {NAV_LINKS.map((link) => (
-              <li key={link.href}>
+              <li key={link.href} data-menu-item>
                 {link.hasMenu ? (
                   <>
                     <button
@@ -342,7 +422,7 @@ export function SiteHeader() {
                 )}
               </li>
             ))}
-            <li className="pt-4 sm:hidden">
+            <li data-menu-item className="pt-4 sm:hidden">
               <CtaLink
                 href="/contact"
                 size="nav"
@@ -353,6 +433,20 @@ export function SiteHeader() {
               </CtaLink>
             </li>
           </ul>
+          {/* Menu telemetry: rule draws, status decodes (decorative) */}
+          <div
+            aria-hidden="true"
+            className="container-content flex items-center gap-3 pb-6 font-mono text-micro tracking-[0.14em] text-grey-2 uppercase"
+          >
+            <span className="animate-breathe size-1.5 shrink-0 rounded-full bg-brand" />
+            <span data-menu-meta className="shrink-0">
+              NAV_{String(NAV_LINKS.length).padStart(2, "0")} · SYSTEM_READY
+            </span>
+            <span
+              data-menu-rule
+              className="h-px flex-1 origin-left bg-divider"
+            />
+          </div>
         </nav>
       )}
     </header>
