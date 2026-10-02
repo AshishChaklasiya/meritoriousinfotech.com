@@ -4,11 +4,12 @@ import { BreadcrumbSchema } from "@/components/seo/schema"
 import { constructMetadata } from "@/lib/metadata"
 
 const DESCRIPTION =
-  "Meritorious Infotech has created cutting-edge websites, e-commerce platforms, and mobile applications in several areas. Our portfolio shows our development skills and capabilities."
+  "A selection of websites, mobile apps and business software we've designed and built for clients in India and abroad. Each project covers the challenge, what we built, and what changed afterwards."
 
 export const metadata = constructMetadata({
-  title: "Portfolio",
-  description: DESCRIPTION,
+  title: "Web & Mobile App Portfolio",
+  description:
+    "Websites, mobile apps and business software we've designed and built for clients in India and abroad, with the results each project delivered.",
   canonicalUrl: "/portfolio",
 })
 
@@ -28,7 +29,7 @@ export default function PortfolioPage() {
         breadcrumbs={BREADCRUMBS}
         title={
           <>
-            Our <span className="text-brand">Portfolio</span>
+            Our <span className="text-brand">Work</span>
           </>
         }
         description={DESCRIPTION}

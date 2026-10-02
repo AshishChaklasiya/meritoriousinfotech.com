@@ -16,6 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/services",
     ...SERVICE_DETAILS.map((service) => `/services/${service.slug}`),
+    "/hire-developers",
+    "/industries/textile-manufacturing",
     "/about-us",
     "/careers",
     ...JOBS.map((job) => `/careers/${job.slug}`),

@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation"
 
+import { ArrowRightIcon, ArrowUpRightSolidIcon } from "@/components/icons"
 import { PageHero } from "@/components/layout/page-hero"
 import { MorePortfolioSection } from "@/components/portfolio/more-portfolio-section"
-import { BreadcrumbSchema } from "@/components/seo/schema"
+import { FaqSection } from "@/components/sections/faq-section"
+import { BreadcrumbSchema, ServiceSchema } from "@/components/seo/schema"
 import { ServiceCapabilityTabs } from "@/components/services/service-capability-tabs"
+import { ServiceFitSection } from "@/components/services/service-fit-section"
+import { CtaLink } from "@/components/ui/cta-link"
 import { SectionHeader } from "@/components/ui/section-header"
 import {
   getServiceDetail,
@@ -27,8 +31,8 @@ export async function generateMetadata({ params }: ServiceDetailPageProps) {
   if (!service) return {}
 
   return constructMetadata({
-    title: service.name,
-    description: service.description,
+    title: service.metaTitle,
+    description: service.metaDescription,
     canonicalUrl: `/services/${service.slug}`,
   })
 }
@@ -54,9 +58,15 @@ export default async function ServiceDetailPage({
           url: crumb.href,
         }))}
       />
+      <ServiceSchema
+        name={service.name}
+        description={service.metaDescription}
+        url={`/services/${service.slug}`}
+      />
 
       <PageHero
         breadcrumbs={breadcrumbs}
+        titleClassName="max-w-[1000px]"
         title={
           <>
             {service.title.before}
@@ -66,6 +76,15 @@ export default async function ServiceDetailPage({
         }
         description={service.description}
         descriptionClassName="max-w-[880px]"
+        action={
+          <CtaLink
+            href="/contact"
+            icon={<ArrowUpRightSolidIcon />}
+            hoverIcon={<ArrowRightIcon />}
+          >
+            {service.heroCta}
+          </CtaLink>
+        }
       />
 
       <section
@@ -77,7 +96,7 @@ export default async function ServiceDetailPage({
             id="capabilities-title"
             eyebrow="What we offer"
             title={service.capabilitiesTitle}
-            description="Industry-grade solutions engineered to deliver optimal speed, maximum security, and robust scalability."
+            description={service.capabilitiesDescription}
             divider
             titleClassName={service.capabilitiesTitleClassName}
             descriptionClassName="max-w-[381px]"
@@ -85,6 +104,10 @@ export default async function ServiceDetailPage({
           <ServiceCapabilityTabs tabs={service.tabs} />
         </div>
       </section>
+
+      <ServiceFitSection service={service} />
+
+      <FaqSection items={service.faq} />
 
       <MorePortfolioSection />
     </>

@@ -11,7 +11,11 @@ import {
   type ReactNode,
 } from "react"
 
-import { ArrowDownRightIcon, UploadIcon } from "@/components/icons"
+import {
+  ArrowDownRightIcon,
+  ChevronDownIcon,
+  UploadIcon,
+} from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { prefersReducedMotion } from "@/lib/motion/env"
 import { cn } from "@/lib/utils"
@@ -62,14 +66,22 @@ function useFieldValidation() {
   const [shaking, setShaking] = useState(false)
 
   const controlProps = {
-    onInvalid(event: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    onInvalid(
+      event: SyntheticEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >
+    ) {
       event.preventDefault()
       const control = event.currentTarget
       setError(control.validationMessage)
       setShaking(true)
       if (control.form?.querySelector(":invalid") === control) control.focus()
     },
-    onInput(event: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    onInput(
+      event: SyntheticEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >
+    ) {
       if (!error) return
       const control = event.currentTarget
       setError(control.validity.valid ? undefined : control.validationMessage)
@@ -163,6 +175,72 @@ export function TextAreaField({
         {...controlProps}
       />
       {message}
+    </div>
+  )
+}
+
+export function SelectField({
+  label,
+  options,
+  placeholder = "Select…",
+  className,
+  ...props
+}: FieldProps & {
+  options: string[]
+  placeholder?: string
+} & ComponentProps<"select">) {
+  const id = useId()
+  const { controlProps, fieldProps, message } = useFieldValidation()
+  return (
+    <div className={cn(fieldClass, className)} {...fieldProps}>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <div className="relative">
+        <select
+          id={id}
+          defaultValue=""
+          className={cn(
+            controlClass,
+            "h-10 cursor-pointer appearance-none pr-9 invalid:text-grey-1 has-[option[value='']:checked]:text-grey-1"
+          )}
+          {...props}
+          {...controlProps}
+        >
+          <option value="" disabled>
+            {placeholder}
+          </option>
+          {options.map((option) => (
+            <option key={option} value={option} className="text-ink">
+              {option}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-grey-1"
+        />
+      </div>
+      {message}
+    </div>
+  )
+}
+
+export function CheckboxField({
+  label,
+  className,
+  ...props
+}: FieldProps & ComponentProps<"input">) {
+  const id = useId()
+  return (
+    <div className={cn("flex items-start gap-3", className)}>
+      <input
+        id={id}
+        type="checkbox"
+        className="mt-[3px] size-4 shrink-0 cursor-pointer accent-brand"
+        {...props}
+      />
+      <label htmlFor={id} className="cursor-pointer text-body-sm text-ink">
+        {label}
+      </label>
     </div>
   )
 }

@@ -11,16 +11,23 @@ import {
 } from "@/components/icons"
 import { CtaLink } from "@/components/ui/cta-link"
 import { TraceLine } from "@/components/ui/trace-line"
+import { COMMITMENTS, CONTACT } from "@/lib/content/company"
 
 const SERVICE_LINKS = [
-  { label: "UI UX & Graphics Design", href: "/services/graphic-ui-ux-design" },
+  { label: "UI/UX & Graphic Design", href: "/services/graphic-ui-ux-design" },
   { label: "Web Development", href: "/services/web-engineering-platforms" },
-  { label: "App Development", href: "/services/mobile-app-development" },
+  { label: "Mobile App Development", href: "/services/mobile-app-development" },
+  { label: "Hire Developers", href: "/hire-developers" },
+  {
+    label: "Textile & Manufacturing",
+    href: "/industries/textile-manufacturing",
+  },
 ]
 
 const HELPFUL_LINKS = [
-  { label: "About US", href: "/about-us" },
+  { label: "About Us", href: "/about-us" },
   { label: "Our Services", href: "/services" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "Technologies", href: "/technologies" },
   { label: "Contact", href: "/contact" },
   { label: "Careers", href: "/careers" },
@@ -29,13 +36,13 @@ const HELPFUL_LINKS = [
 const CONTACT_GROUPS = [
   {
     title: "For Business",
-    phone: "+91 9979507813",
-    email: "info@meritoriousinfotech.com",
+    phone: CONTACT.phones[0],
+    email: CONTACT.emails.business,
   },
   {
     title: "For HR",
-    phone: "+91 9979507813",
-    email: "hr@meritoriousinfotech.com",
+    phone: CONTACT.phones[0],
+    email: CONTACT.emails.hr,
   },
 ]
 
@@ -98,9 +105,8 @@ function ContactCta() {
           data-delay="0.3"
           className="max-w-[606px] text-title text-grey-1"
         >
-          We are committed to providing exceptional web and mobile app
-          development solutions to businesses globally, ensuring the successful
-          completion of each sprint.
+          Tell us what you want to build. We&apos;ll reply within one working
+          day and send a price range within {COMMITMENTS.estimateHours} hours.
         </p>
       </div>
       <div data-anim="fade-up" data-delay="0.45">
@@ -110,7 +116,7 @@ function ContactCta() {
           icon={<ArrowUpRightIcon />}
           hoverIcon={<ArrowRightIcon />}
         >
-          Contact Us
+          Get an estimate
         </CtaLink>
       </div>
     </section>
@@ -163,9 +169,9 @@ export function SiteFooter() {
                 />
               </Link>
               <p className="max-w-[348px] text-body-sm text-grey-2">
-                Disciplined digital infrastructure engineering and
-                high-performance software synthesis. Modern web, mobile, and
-                enterprise solutions architected with mathematical precision.
+                A design and software development studio in Surat. We build
+                websites, mobile apps and custom software for growing businesses
+                in India and abroad.
               </p>
               <address className="max-w-[267px] text-body-sm leading-[22px] text-grey-2 not-italic">
                 401 - 4th Floor, 1/954 Palia street, Nanpura, Surat - 395001,

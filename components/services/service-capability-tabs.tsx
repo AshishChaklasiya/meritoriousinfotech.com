@@ -51,6 +51,18 @@ const TAB_ICONS: Record<ServiceTabIcon, typeof UserExperienceIcon> = {
   "react-native": ReactNativeIcon,
 }
 
+/** "Label: text" points render the label bold */
+function PointText({ point }: { point: string }) {
+  const split = point.indexOf(": ")
+  if (split === -1) return point
+  return (
+    <>
+      <span className="font-medium">{point.slice(0, split + 1)}</span>
+      {point.slice(split + 1)}
+    </>
+  )
+}
+
 function TabPanelContent({ tab }: { tab: ServiceTab }) {
   const [expanded, setExpanded] = useState(false)
   const moreId = useId()
@@ -111,7 +123,9 @@ function TabPanelContent({ tab }: { tab: ServiceTab }) {
             className="list-disc pt-3.5 pl-6 text-base leading-[29px] text-ink marker:text-ink"
           >
             {visiblePoints.map((point) => (
-              <li key={point}>{point}</li>
+              <li key={point}>
+                <PointText point={point} />
+              </li>
             ))}
           </ul>
         )}

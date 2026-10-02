@@ -1,6 +1,6 @@
 import type { Viewport } from "next"
 import { JetBrains_Mono, Manrope, Outfit } from "next/font/google"
-import { siteConfig, constructMetadata } from "@/lib/metadata"
+import { constructMetadata } from "@/lib/metadata"
 
 import "./globals.css"
 import { MotionRoot } from "@/components/motion/motion-root"
@@ -70,6 +70,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT }} />
       </head>
       <body>
+        <OrganizationSchema />
+        <LocalBusinessSchema />
         {/* Always opens in light; dark only when the visitor picks it (header
             toggle / "D" key). The OS preference is ignored; next-themes
             persists the visitor's choice */}

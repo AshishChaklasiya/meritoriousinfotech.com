@@ -19,26 +19,26 @@ function MonitorLargeIcon(props: SVGProps<SVGSVGElement>) {
 const SERVICES: ServiceOverview[] = [
   {
     icon: PenToolIcon,
-    title: "Graphic & UI/UX System Design",
+    title: "UI/UX & Graphic Design",
     description:
-      "Bringing your product vision into crystal clarity. We construct cohesive design systems, atomic UI components, and accessible digital touchpoint that command authority in saturated industries.",
-    tags: ["Figma", "Photoshop", "Illustrator", "XD"],
+      "Brand identities, website and app interfaces, and clickable prototypes that show how your product will work before development starts.",
+    tags: ["Figma", "Photoshop", "Illustrator"],
     href: "/services/graphic-ui-ux-design",
   },
   {
     icon: MonitorLargeIcon,
-    title: "Web Engineering & Platforms",
+    title: "Web Development",
     description:
-      "Build and own automated QA pipelines for our web and mobile products. Manual + automation, with a craft mindset.",
-    tags: ["NODE", "React Native", "DJANGO", "POSTGRES"],
+      "Business websites, online stores, customer portals and web applications that are fast, easy to update and built to be found on Google.",
+    tags: ["React", "Node.js", "Laravel", "WordPress"],
     href: "/services/web-engineering-platforms",
   },
   {
     icon: DeviceMobileIcon,
     title: "Mobile App Development",
     description:
-      "Native and hybrid applications engineered with surgical precision. Smooth 60 FPS transitions, battery-optimized background synchronizations, and seamless platform-specific APIs.",
-    tags: ["Android", "IOS", "Flutter", "ReactNative"],
+      "Android, iOS and cross-platform apps, from a first MVP to a product used every day, with store launch and ongoing support included.",
+    tags: ["Android", "iOS", "Flutter", "React Native"],
     href: "/services/mobile-app-development",
   },
 ]

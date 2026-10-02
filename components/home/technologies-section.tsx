@@ -3,9 +3,9 @@ import { Marquee } from "@/components/ui/marquee"
 
 const TECH_ROWS = [
   [
-    "React. JS",
-    "Node. JS",
-    "Java Script",
+    "React.js",
+    "Node.js",
+    "JavaScript",
     "Angular",
     "Python",
     "C#",
@@ -15,9 +15,9 @@ const TECH_ROWS = [
   ],
   [
     "LangChain",
-    "My SQL",
+    "MySQL",
     "Claude",
-    "Mongo DB",
+    "MongoDB",
     "TensorFlow",
     "GPT",
     "Oracle",
@@ -43,10 +43,10 @@ export function TechnologiesSection() {
       <div className="container-content flex flex-col gap-11">
         <SectionHeader
           id="technologies-title"
-          index="03"
+          index="07"
           eyebrow="Technology stack"
-          title="Our Technologies we specialize in Development"
-          description="We leverage the industry's most advanced frameworks and languages to design scalable, secure, and future-proof digital solutions."
+          title="Technologies We Work With"
+          description="We pick the stack that suits your project, budget and in-house team, not just the one we like. These are the tools we use most."
           titleClassName="max-w-[647px]"
           descriptionClassName="max-w-[480px]"
         />

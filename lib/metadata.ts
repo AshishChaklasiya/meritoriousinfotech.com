@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata } from "next"
 
 /**
  * Reusable metadata generator for Next.js App Router.
@@ -7,28 +7,28 @@ import { Metadata } from "next";
 
 export const siteConfig = {
   name: "Meritorious Infotech",
-  description: "Expert software development company specializing in Web, Mobile, Cloud, and AI/ML solutions for SMBs and Enterprise clients.",
+  description:
+    "Meritorious Infotech is a software development company in Surat building websites, mobile apps and custom software. Get a price range in 48 hours.",
   url: "https://meritoriousinfotech.com",
   ogImage: "https://meritoriousinfotech.com/og-image.png",
   locale: "en_US",
   keywords: [
-    "custom software development",
+    "software development company in Surat",
     "IT company in Surat",
-    "Web Development",
-    "Mobile App Development",
-    "Cloud Solutions",
-    "AI/ML Services",
-    "Surat IT services",
+    "custom software development",
+    "website development company in Surat",
+    "mobile app development company in Surat",
+    "UI UX design company in Surat",
   ],
-};
+}
 
 interface MetadataProps {
-  title?: string;
-  description?: string;
-  canonicalUrl?: string;
-  ogImage?: string;
-  ogType?: "website" | "article"; // Task 5
-  noIndex?: boolean;
+  title?: string
+  description?: string
+  canonicalUrl?: string
+  ogImage?: string
+  ogType?: "website" | "article" // Task 5
+  noIndex?: boolean
 }
 
 export function constructMetadata({
@@ -39,7 +39,7 @@ export function constructMetadata({
   ogType = "website",
   noIndex = false,
 }: MetadataProps = {}): Metadata {
-  const fullTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name;
+  const fullTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name
 
   return {
     title: fullTitle,
@@ -72,7 +72,6 @@ export function constructMetadata({
       title: fullTitle,
       description,
       images: [ogImage],
-      creator: "@meritodesk", // Replace with actual handle
     },
     icons: {
       icon: "/favicon.ico",
@@ -86,5 +85,5 @@ export function constructMetadata({
         follow: false,
       },
     }),
-  };
+  }
 }

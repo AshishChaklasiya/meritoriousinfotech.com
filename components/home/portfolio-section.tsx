@@ -15,8 +15,8 @@ export function PortfolioSection() {
           id="portfolio-title"
           index="04"
           eyebrow="Portfolio"
-          title={"Discover Our Winning\nProject Portfolio"}
-          description="Real products, real users, real results - see how we’ve helped founders and enterprises launch web, mobile, and AI-powered applications across industries."
+          title={"Recent Work,\nand What It Changed"}
+          description="Websites, mobile apps and business tools we've designed and built, with the difference each one made for the client."
           divider
           className="w-full"
           descriptionClassName="max-w-[463px]"
@@ -29,7 +29,7 @@ export function PortfolioSection() {
           icon={<ArrowUpRightIcon />}
           hoverIcon={<ArrowRightIcon />}
         >
-          Discover More
+          See all projects
         </CtaLink>
       </div>
     </section>

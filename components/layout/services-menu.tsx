@@ -20,8 +20,8 @@ function DesignIcon(props: SVGProps<SVGSVGElement>) {
 // Figma: "Our services drop down" frame (6:717), panel 6:1389
 export const SERVICE_MENU: ServiceMenuGroup[] = [
   {
-    title: "Graphic & UI/UX Design",
-    tagline: "Interfaces people love",
+    title: "UI/UX & Graphic Design",
+    tagline: "Brands, interfaces, prototypes",
     href: "/services/graphic-ui-ux-design",
     icon: DesignIcon,
     links: [
@@ -38,11 +38,11 @@ export const SERVICE_MENU: ServiceMenuGroup[] = [
         href: "/services/graphic-ui-ux-design#user-research-services",
       },
       {
-        label: "Mobile & Web Apps",
+        label: "App UI Design",
         href: "/services/graphic-ui-ux-design#mobile-and-web-apps-ui-design",
       },
       {
-        label: "Custom Web design",
+        label: "Web Design & Branding",
         href: "/services/graphic-ui-ux-design#custom-web-design-services",
       },
       {
@@ -53,7 +53,7 @@ export const SERVICE_MENU: ServiceMenuGroup[] = [
   },
   {
     title: "Web Development",
-    tagline: "Sites, portals & CMS",
+    tagline: "Websites, stores & web apps",
     href: "/services/web-engineering-platforms",
     icon: MonitorIcon,
     links: [
@@ -66,19 +66,19 @@ export const SERVICE_MENU: ServiceMenuGroup[] = [
         href: "/services/web-engineering-platforms#powerful-backend-development",
       },
       {
-        label: "Landing Page Website",
+        label: "Landing Pages",
         href: "/services/web-engineering-platforms#landing-page-solutions",
       },
       {
-        label: "CMS Solutions",
+        label: "CMS & Business Websites",
         href: "/services/web-engineering-platforms#efficient-cms-solutions",
       },
       {
-        label: "E-Commerce Solutions",
+        label: "E-commerce",
         href: "/services/web-engineering-platforms#tailored-ecommerce-solutions",
       },
       {
-        label: "Development",
+        label: "Web Apps & Portals",
         href: "/services/web-engineering-platforms#accelerating-your-development",
       },
     ],
@@ -94,7 +94,7 @@ export const SERVICE_MENU: ServiceMenuGroup[] = [
         href: "/services/mobile-app-development#android-app-development",
       },
       {
-        label: "IOS",
+        label: "iOS",
         href: "/services/mobile-app-development#ios-app-development",
       },
       {

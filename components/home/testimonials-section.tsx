@@ -18,13 +18,6 @@ const REVIEWS: Review[] = [
     rating: 5,
   },
   {
-    name: "Hardik Beladiya",
-    postedAgo: "3 Years Ago",
-    quote:
-      "Awesome company for work, continuous learning, and exploring new cutting-edge technology stacks.",
-    rating: 5,
-  },
-  {
     name: "Mohammed Rangrej",
     postedAgo: "4 Years Ago",
     quote:
@@ -56,16 +49,6 @@ function ReviewCard({ review }: { review: Review }) {
           &quot;{review.quote}&quot;
         </blockquote>
       </div>
-      <div className="flex justify-between gap-4 border-t border-divider pt-3 font-mono text-micro uppercase">
-        <span className="text-grey-2">Auth: Google_OAuth</span>
-        <span className="flex items-center gap-1.5 text-brand">
-          <span
-            aria-hidden="true"
-            className="animate-breathe size-1 rounded-full bg-brand"
-          />
-          Verified
-        </span>
-      </div>
     </figure>
   )
 }
@@ -81,8 +64,8 @@ export function TestimonialsSection() {
           id="testimonials-title"
           index="05"
           eyebrow="Testimonials"
-          title={"Customer Voices:\nVerified Telemetry"}
-          description="Authentic reviews and verified ratings from global enterprise stakeholders, partners, and founders who trust our architectural execution."
+          title={"What Our\nClients Say"}
+          description="Reviews from founders and business owners we've built for."
           descriptionClassName="max-w-[441px]"
         />
 
