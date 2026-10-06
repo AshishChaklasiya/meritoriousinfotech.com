@@ -1,5 +1,4 @@
-import { RiAddLine } from "@remixicon/react"
-
+import { FaqList } from "@/components/sections/faq-list"
 import { FAQSchema } from "@/components/seo/schema"
 import { SectionHeader } from "@/components/ui/section-header"
 import { cn } from "@/lib/utils"
@@ -16,8 +15,8 @@ type FaqSectionProps = {
 }
 
 /**
- * Question list as native <details> disclosures (works without JS) plus the
- * matching FAQPage structured data.
+ * Question list (native <details>, animated once hydrated) plus the matching
+ * FAQPage structured data.
  */
 export function FaqSection({
   items,
@@ -48,24 +47,7 @@ export function FaqSection({
           descriptionClassName="max-w-[400px]"
         />
 
-        <ul data-anim="stagger" className="border-t border-divider">
-          {items.map((item) => (
-            <li key={item.question} className="border-b border-divider">
-              <details className="group/faq">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left text-title-lg font-medium text-ink transition-colors hover:text-brand [&::-webkit-details-marker]:hidden">
-                  {item.question}
-                  <RiAddLine
-                    aria-hidden="true"
-                    className="size-5 shrink-0 text-brand transition-transform duration-300 group-open/faq:rotate-45"
-                  />
-                </summary>
-                <p className="max-w-[860px] pb-6 text-body text-grey-1">
-                  {item.answer}
-                </p>
-              </details>
-            </li>
-          ))}
-        </ul>
+        <FaqList items={items} />
       </div>
     </section>
   )

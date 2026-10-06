@@ -1,6 +1,6 @@
 "use client"
 
-import { animate, stagger } from "animejs"
+import { AnimatePresence, motion, stagger, type Variants } from "motion/react"
 import {
   useCallback,
   useEffect,
@@ -29,7 +29,7 @@ import {
   WebDesignIcon,
 } from "@/components/services/tab-icons"
 import type { ServiceTab, ServiceTabIcon } from "@/lib/content/service-details"
-import { prefersReducedMotion } from "@/lib/motion/env"
+import { EASE_OUT, GLIDE } from "@/lib/motion/motion"
 import { cn } from "@/lib/utils"
 
 const TAB_ICONS: Record<ServiceTabIcon, typeof UserExperienceIcon> = {
@@ -63,76 +63,84 @@ function PointText({ point }: { point: string }) {
   )
 }
 
+/* Panel: the outgoing tab fades quickly, then the new one cascades in */
+const panel: Variants = {
+  hidden: {},
+  shown: { transition: { delayChildren: stagger(0.06) } },
+  gone: { opacity: 0, transition: { duration: 0.15 } },
+}
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  shown: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
+}
+
+/* "Read More" points slide in one by one and slide back out when collapsed */
+const morePoint: Variants = {
+  hidden: { opacity: 0, x: -10 },
+  shown: (index: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.5, delay: index * 0.04, ease: EASE_OUT },
+  }),
+  gone: { opacity: 0, x: -10, transition: { duration: 0.15 } },
+}
+
 function TabPanelContent({ tab }: { tab: ServiceTab }) {
   const [expanded, setExpanded] = useState(false)
   const moreId = useId()
-  const rootRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLUListElement>(null)
-  const visiblePoints = expanded ? [...tab.points, ...tab.more] : tab.points
-
-  // Panel content cascades in on each tab switch (keyed remount)
-  useEffect(() => {
-    if (!rootRef.current || prefersReducedMotion()) return
-    const animation = animate(rootRef.current.children, {
-      opacity: [0, 1],
-      translateY: [14, 0],
-      duration: 600,
-      delay: stagger(60),
-      ease: "outExpo",
-    })
-    return () => {
-      animation.revert()
-    }
-  }, [])
-
-  // "Read More" points slide in as they are revealed
-  useEffect(() => {
-    if (!expanded || !listRef.current || prefersReducedMotion()) return
-    const added = Array.from(listRef.current.children).slice(tab.points.length)
-    const animation = animate(added, {
-      opacity: [0, 1],
-      translateX: [-10, 0],
-      duration: 500,
-      delay: stagger(40),
-      ease: "outExpo",
-    })
-    return () => {
-      animation.revert()
-    }
-  }, [expanded, tab.points.length])
 
   return (
-    <div ref={rootRef} className="flex flex-col gap-[22px]">
+    <motion.div
+      variants={panel}
+      initial="hidden"
+      animate="shown"
+      exit="gone"
+      className="flex flex-col gap-[22px]"
+    >
       {tab.intro.map((paragraph) => (
-        <p
+        <motion.p
           key={paragraph}
+          variants={rise}
           className="text-body text-grey-1 md:text-lg md:leading-[1.28]"
         >
           {paragraph}
-        </p>
+        </motion.p>
       ))}
 
-      <div>
+      <motion.div variants={rise}>
         <h3 className="text-xl leading-[1.25] font-medium tracking-[-0.02em] text-ink">
           {tab.heading}
         </h3>
-        {visiblePoints.length > 0 && (
-          <ul
-            ref={listRef}
-            id={moreId}
-            className="list-disc pt-3.5 pl-6 text-base leading-[29px] text-ink marker:text-ink"
-          >
-            {visiblePoints.map((point) => (
-              <li key={point}>
-                <PointText point={point} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        <ul
+          id={moreId}
+          className="list-disc pt-3.5 pl-6 text-base leading-[29px] text-ink marker:text-ink"
+        >
+          {tab.points.map((point) => (
+            <li key={point}>
+              <PointText point={point} />
+            </li>
+          ))}
+          <AnimatePresence initial={false}>
+            {expanded &&
+              tab.more.map((point, index) => (
+                <motion.li
+                  key={point}
+                  custom={index}
+                  variants={morePoint}
+                  initial="hidden"
+                  animate="shown"
+                  exit="gone"
+                >
+                  <PointText point={point} />
+                </motion.li>
+              ))}
+          </AnimatePresence>
+        </ul>
+      </motion.div>
 
       {tab.more.length > 0 && (
-        <div className="pt-2.5">
+        <motion.div variants={rise} className="pt-2.5">
           <button
             type="button"
             aria-expanded={expanded}
@@ -159,9 +167,9 @@ function TabPanelContent({ tab }: { tab: ServiceTab }) {
               />
             </svg>
           </button>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }
 
@@ -259,7 +267,7 @@ export function ServiceCapabilityTabs({ tabs }: { tabs: ServiceTab[] }) {
         role="tablist"
         aria-orientation="vertical"
         aria-label="Service capabilities"
-        className="flex shrink-0 flex-col border-b border-divider lg:w-[367px] lg:border-r lg:border-b-0"
+        className="flex shrink-0 flex-col border-b border-divider bg-surface lg:w-[367px] lg:border-r lg:border-b-0"
       >
         {tabs.map((tab, index) => {
           const active = tab.id === activeTab.id
@@ -279,14 +287,25 @@ export function ServiceCapabilityTabs({ tabs }: { tabs: ServiceTab[] }) {
               onClick={() => selectTab(tab.id)}
               onKeyDown={(event) => onKeyDown(event, index)}
               className={cn(
-                "flex items-center gap-4 border-divider p-6 text-left text-base leading-5 font-medium transition-colors not-last:border-b lg:whitespace-nowrap",
+                "relative border-divider p-6 text-left text-base leading-5 font-medium transition-colors not-last:border-b lg:whitespace-nowrap",
                 active
-                  ? "bg-brand text-snow"
-                  : "bg-surface text-ink hover:bg-canvas-muted hover:text-brand"
+                  ? "text-snow"
+                  : "text-ink hover:bg-canvas-muted hover:text-brand"
               )}
             >
-              <Icon className="size-[18px] shrink-0" />
-              {tab.label}
+              {/* The brand row travels to the selected tab */}
+              {active && (
+                <motion.span
+                  layoutId={`${baseId}-active`}
+                  aria-hidden="true"
+                  transition={GLIDE}
+                  className="absolute inset-0 bg-brand"
+                />
+              )}
+              <span className="relative flex items-center gap-4">
+                <Icon className="size-[18px] shrink-0" />
+                {tab.label}
+              </span>
             </button>
           )
         })}
@@ -299,7 +318,9 @@ export function ServiceCapabilityTabs({ tabs }: { tabs: ServiceTab[] }) {
         className="flex-1 px-6 py-6 md:px-[50px]"
       >
         {/* Keyed so "Read More" resets when switching tabs */}
-        <TabPanelContent key={activeTab.id} tab={activeTab} />
+        <AnimatePresence mode="wait" initial={false}>
+          <TabPanelContent key={activeTab.id} tab={activeTab} />
+        </AnimatePresence>
       </div>
     </div>
   )

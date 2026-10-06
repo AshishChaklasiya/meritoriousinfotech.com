@@ -1,14 +1,16 @@
 "use client"
 
-import { animate, stagger } from "animejs"
-import { useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion, type Variants } from "motion/react"
+import { useLayoutEffect, useRef, useState } from "react"
 
-import { PortfolioGrid } from "@/components/portfolio/portfolio-grid"
+import { PortfolioCard } from "@/components/portfolio/portfolio-grid"
 import {
   PORTFOLIO,
   PORTFOLIO_CATEGORIES,
   type PortfolioCategory,
 } from "@/lib/content/portfolio"
+import { gsap } from "@/lib/motion/gsap"
+import { EASE_OUT, GLIDE } from "@/lib/motion/motion"
 import { cn } from "@/lib/utils"
 
 type Filter = PortfolioCategory | "all"
@@ -22,40 +24,44 @@ const FILTERS: { value: Filter; label: string; count: number }[] = [
   })),
 ]
 
+/* Cards that stay glide to their new cell; new ones deal in, in order; the
+   rest step out of the way. */
+const card: Variants = {
+  hidden: { opacity: 0, y: 28, scale: 0.97 },
+  shown: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, delay: index * 0.07, ease: EASE_OUT },
+  }),
+  gone: { opacity: 0, scale: 0.96, transition: { duration: 0.25 } },
+}
+
 /** Category chips (Figma "Filter") above the project grid. */
 export function PortfolioBrowser() {
   const [filter, setFilter] = useState<Filter>("all")
-  const gridRef = useRef<HTMLDivElement>(null)
-  const shownFilter = useRef(filter)
+  const listRef = useRef<HTMLUListElement>(null)
+  const handedOff = useRef(false)
   const projects =
     filter === "all"
       ? PORTFOLIO
       : PORTFOLIO.filter((project) => project.category === filter)
 
-  // Re-deal the cards whenever the filter changes (not on first paint; the
-  // scroll reveal handles that).
-  useEffect(() => {
-    if (shownFilter.current === filter) return
-    shownFilter.current = filter
-    const grid = gridRef.current
-    if (!grid || !document.documentElement.classList.contains("motion")) return
-
-    // Cards mounted by the filter skip their scroll reveal
-    grid
-      .querySelectorAll("[data-anim]")
-      .forEach((el) => el.setAttribute("data-revealed", ""))
-    const cards = grid.querySelectorAll("ul > li")
-    const animation = animate(cards, {
-      opacity: [0, 1],
-      translateY: [28, 0],
-      scale: [0.97, 1],
-      duration: 700,
-      delay: stagger(70),
-      ease: "outExpo",
-    })
-    return () => {
-      animation.revert()
+  // First paint is GSAP's scroll reveal. From the first filter on, Motion owns
+  // the cards: stop a reveal still running, and mark everything revealed
+  // (before paint) so cards mounted by the filter aren't held hidden.
+  useLayoutEffect(() => {
+    const list = listRef.current
+    if (!list || (!handedOff.current && filter === "all")) return
+    if (!handedOff.current) {
+      handedOff.current = true
+      gsap.killTweensOf(list.children)
+      gsap.set(list.children, { clearProps: "opacity,visibility" })
+      list.setAttribute("data-revealed", "")
     }
+    list
+      .querySelectorAll("[data-anim]:not([data-revealed])")
+      .forEach((el) => el.setAttribute("data-revealed", ""))
   }, [filter])
 
   return (
@@ -74,29 +80,60 @@ export function PortfolioBrowser() {
               aria-pressed={active}
               onClick={() => setFilter(item.value)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-[2px] border px-4 py-2 text-body-sm leading-5 font-medium transition-[color,background-color,border-color,translate] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:translate-y-px",
+                "relative inline-flex rounded-[2px] border px-4 py-2 text-body-sm leading-5 font-medium transition-[color,background-color,border-color,translate] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:translate-y-px",
                 active
-                  ? "border-brand bg-brand text-snow"
+                  ? "border-brand text-snow"
                   : "border-divider bg-surface text-ink hover:border-ink"
               )}
             >
-              {item.label}
-              <span
-                className={cn(
-                  "text-[10px] leading-none font-medium",
-                  active ? "text-snow" : "text-grey-1"
-                )}
-              >
-                {item.count}
+              {/* The brand fill travels to whichever chip is active */}
+              {active && (
+                <motion.span
+                  layoutId="portfolio-filter"
+                  aria-hidden="true"
+                  transition={GLIDE}
+                  className="absolute -inset-px rounded-[2px] bg-brand"
+                />
+              )}
+              <span className="relative inline-flex items-center gap-2">
+                {item.label}
+                <span
+                  className={cn(
+                    "text-[10px] leading-none font-medium transition-colors duration-300",
+                    active ? "text-snow" : "text-grey-1"
+                  )}
+                >
+                  {item.count}
+                </span>
               </span>
             </button>
           )
         })}
       </div>
 
-      <div ref={gridRef}>
-        <PortfolioGrid projects={projects} />
-      </div>
+      {/* Same markup as PortfolioGrid, with each card animated by Motion */}
+      <ul
+        ref={listRef}
+        data-anim="stagger"
+        className="relative grid w-full gap-8 md:grid-cols-2 lg:grid-cols-3"
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
+          {projects.map((project, index) => (
+            <motion.li
+              key={project.slug}
+              layout="position"
+              custom={index}
+              variants={card}
+              initial="hidden"
+              animate="shown"
+              exit="gone"
+              transition={{ layout: GLIDE }}
+            >
+              <PortfolioCard project={project} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
     </div>
   )
 }

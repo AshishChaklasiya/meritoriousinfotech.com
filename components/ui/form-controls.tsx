@@ -1,10 +1,8 @@
 "use client"
 
-import { animate } from "animejs"
+import { AnimatePresence, motion } from "motion/react"
 import {
-  useEffect,
   useId,
-  useRef,
   useState,
   type ComponentProps,
   type SyntheticEvent,
@@ -17,7 +15,7 @@ import {
   UploadIcon,
 } from "@/components/icons"
 import { Button } from "@/components/ui/button"
-import { prefersReducedMotion } from "@/lib/motion/env"
+import { EASE_OUT, POP } from "@/lib/motion/motion"
 import { cn } from "@/lib/utils"
 
 /* Figma "Form - Job application form": 12px caps labels, 40px inputs with a
@@ -95,14 +93,25 @@ function useFieldValidation() {
     onAnimationEnd: () => setShaking(false),
   }
 
-  const message = error ? (
-    <p
-      id={errorId}
-      className="animate-in text-xs leading-4 text-destructive duration-300 fade-in slide-in-from-top-1 motion-reduce:animate-none"
-    >
-      {error}
-    </p>
-  ) : null
+  // Opens and closes smoothly; the negative margin folds away the field's
+  // flex gap while collapsed so nothing jumps when it unmounts
+  const message = (
+    <AnimatePresence initial={false}>
+      {error && (
+        <motion.p
+          key="error"
+          id={errorId}
+          initial={{ opacity: 0, height: 0, marginTop: -9 }}
+          animate={{ opacity: 1, height: "auto", marginTop: 0 }}
+          exit={{ opacity: 0, height: 0, marginTop: -9 }}
+          transition={{ duration: 0.3, ease: EASE_OUT }}
+          className="overflow-hidden text-xs leading-4 text-destructive"
+        >
+          {error}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  )
 
   return { controlProps, fieldProps, message }
 }
@@ -412,26 +421,12 @@ export function useFormSubmit() {
 }
 
 export function FormSuccess({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  // Small confirming pop; skipped for reduced motion
-  useEffect(() => {
-    if (!ref.current || prefersReducedMotion()) return
-    const animation = animate(ref.current, {
-      opacity: [0, 1],
-      translateY: [10, 0],
-      scale: [0.98, 1],
-      duration: 650,
-      ease: "outBack(1.4)",
-    })
-    return () => {
-      animation.revert()
-    }
-  }, [])
-
   return (
-    <div
-      ref={ref}
+    // Small confirming pop (springs in with a hint of overshoot)
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={POP}
       role="status"
       className="flex items-start gap-3 border border-brand/30 bg-brand-soft px-4 py-3 text-body-sm text-ink"
     >
@@ -461,6 +456,6 @@ export function FormSuccess({ children }: { children: ReactNode }) {
         </span>
         <p>{children}</p>
       </div>
-    </div>
+    </motion.div>
   )
 }

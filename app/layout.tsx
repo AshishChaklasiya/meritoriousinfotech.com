@@ -3,6 +3,7 @@ import { JetBrains_Mono, Manrope, Outfit } from "next/font/google"
 import { constructMetadata } from "@/lib/metadata"
 
 import "./globals.css"
+import { MotionProvider } from "@/components/motion/motion-provider"
 import { MotionRoot } from "@/components/motion/motion-root"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
@@ -76,8 +77,10 @@ export default function RootLayout({
             toggle / "D" key). The OS preference is ignored; next-themes
             persists the visitor's choice */}
         <ThemeProvider defaultTheme="light" enableSystem={false}>
-          {children}
-          <MotionRoot />
+          <MotionProvider>
+            {children}
+            <MotionRoot />
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

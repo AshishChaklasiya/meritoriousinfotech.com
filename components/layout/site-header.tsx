@@ -5,7 +5,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { RiCloseLine, RiMenuLine } from "@remixicon/react"
-import { animate, stagger } from "animejs"
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  stagger,
+  useIsPresent,
+  type Variants,
+} from "motion/react"
 
 import {
   ArrowRightIcon,
@@ -20,6 +27,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { CtaLink } from "@/components/ui/cta-link"
 import { prefersReducedMotion } from "@/lib/motion/env"
 import { gsap, SCRAMBLE_CHARS } from "@/lib/motion/gsap"
+import { EASE_IN_OUT, EASE_OUT } from "@/lib/motion/motion"
 import { cn } from "@/lib/utils"
 
 const NAV_LINKS = [
@@ -44,12 +52,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
-  // Mobile panel stays mounted while its close choreography plays
-  const [closing, setClosing] = useState(false)
   const servicesRef = useRef<HTMLLIElement>(null)
   const servicesTriggerRef = useRef<HTMLButtonElement>(null)
   const megaMenuRef = useRef<HTMLDivElement>(null)
-  const mobileNavRef = useRef<HTMLElement>(null)
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const menuOpen = open || servicesOpen
@@ -83,92 +88,16 @@ export function SiteHeader() {
     setHidden(false)
   }, [pathname])
 
-  // Menu contents cascade in (anime.js: small, self-contained UI motion)
+  // Menu contents cascade in
   useEffect(() => {
     if (!servicesOpen || !megaMenuRef.current || prefersReducedMotion()) return
     const animation = animate(
       megaMenuRef.current.querySelectorAll("#services-menu a"),
-      {
-        opacity: [0, 1],
-        translateY: [8, 0],
-        duration: 450,
-        delay: stagger(18),
-        ease: "outExpo",
-      }
+      { opacity: [0, 1], y: [8, 0] },
+      { duration: 0.45, delay: stagger(0.018), ease: EASE_OUT }
     )
-    return () => {
-      animation.revert()
-    }
+    return () => animation.complete()
   }, [servicesOpen])
-
-  // Mobile menu open: panel reveals → items stagger in → rule draws →
-  // status line decodes
-  useEffect(() => {
-    const nav = mobileNavRef.current
-    if (!open || !nav || prefersReducedMotion()) return
-    const animations = [
-      animate(nav, {
-        clipPath: ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"],
-        duration: 420,
-        ease: "outExpo",
-      }),
-      animate(nav.querySelectorAll("[data-menu-item]"), {
-        opacity: [0, 1],
-        translateX: [-16, 0],
-        duration: 500,
-        delay: stagger(45, { start: 80 }),
-        ease: "outExpo",
-      }),
-      animate(nav.querySelectorAll("[data-menu-rule]"), {
-        scaleX: [0, 1],
-        duration: 700,
-        delay: 250,
-        ease: "outExpo",
-      }),
-    ]
-    const meta = nav.querySelector("[data-menu-meta]")
-    const ctx = gsap.context(() => {
-      if (!meta) return
-      gsap.to(meta, {
-        duration: 0.6,
-        delay: 0.3,
-        ease: "none",
-        scrambleText: {
-          text: meta.textContent ?? "",
-          chars: SCRAMBLE_CHARS,
-          speed: 0.8,
-        },
-      })
-    })
-    return () => {
-      animations.forEach((animation) => animation.revert())
-      ctx.revert()
-    }
-  }, [open])
-
-  // Mobile menu close: the same choreography, reversed and quicker
-  useEffect(() => {
-    const nav = mobileNavRef.current
-    if (!closing || !nav) return
-    const items = animate(nav.querySelectorAll("[data-menu-item]"), {
-      opacity: 0,
-      translateX: -8,
-      duration: 180,
-      delay: stagger(25, { reversed: true }),
-      ease: "inQuad",
-    })
-    const panel = animate(nav, {
-      clipPath: ["inset(0% 0% 0% 0%)", "inset(0% 0% 100% 0%)"],
-      duration: 300,
-      delay: 120,
-      ease: "inOutQuad",
-    })
-    panel.then(() => setClosing(false))
-    return () => {
-      items.revert()
-      panel.revert()
-    }
-  }, [closing])
 
   // Close the desktop mega menu on outside click / Escape
   useEffect(() => {
@@ -195,15 +124,8 @@ export function SiteHeader() {
   }, [servicesOpen])
 
   function closeMobile() {
-    if (!open) return
     setOpen(false)
     setMobileServicesOpen(false)
-    if (!prefersReducedMotion()) setClosing(true)
-  }
-
-  function openMobile() {
-    setClosing(false)
-    setOpen(true)
   }
 
   return (
@@ -351,104 +273,200 @@ export function SiteHeader() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => (open ? closeMobile() : openMobile())}
+            onClick={() => (open ? closeMobile() : setOpen(true))}
           >
-            {/* Icons swap with a short turn; keyed so each swap replays */}
-            {open ? (
-              <RiCloseLine
-                key="close"
-                className="size-6 animate-in duration-300 fade-in spin-in-90 motion-reduce:animate-none"
-              />
-            ) : (
-              <RiMenuLine
-                key="menu"
-                className="size-6 animate-in duration-300 fade-in motion-reduce:animate-none"
-              />
-            )}
+            {/* Icons swap with a short turn */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={open ? "close" : "menu"}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.15 }}
+              >
+                {open ? (
+                  <RiCloseLine className="size-6" />
+                ) : (
+                  <RiMenuLine className="size-6" />
+                )}
+              </motion.span>
+            </AnimatePresence>
           </button>
         </div>
       </div>
 
-      {(open || closing) && (
-        <nav
-          ref={mobileNavRef}
-          id="mobile-nav"
-          aria-label="Mobile"
-          inert={closing}
-          className="max-h-[calc(100svh-81px)] overflow-y-auto border-t border-divider bg-canvas lg:hidden"
-        >
-          <ul className="container-content flex flex-col py-4">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href} data-menu-item>
-                {link.hasMenu ? (
-                  <>
-                    <button
-                      type="button"
-                      aria-expanded={mobileServicesOpen}
-                      aria-controls="mobile-services-menu"
-                      onClick={() => setMobileServicesOpen((v) => !v)}
-                      className="flex w-full items-center justify-between py-3 text-body-sm tracking-[0.0686em] text-grey-1 uppercase"
-                    >
-                      {link.label}
-                      <ChevronDownIcon
-                        className={cn(
-                          "size-[17px] transition-transform duration-200",
-                          mobileServicesOpen && "rotate-180"
-                        )}
-                      />
-                    </button>
-                    {mobileServicesOpen && (
-                      <div id="mobile-services-menu">
-                        <ServicesMenuList onNavigate={closeMobile} />
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    href={link.href}
-                    aria-current={
-                      isActive(link.href, pathname) ? "page" : undefined
-                    }
-                    onClick={closeMobile}
-                    className={cn(
-                      "block py-3 text-body-sm tracking-[0.0686em] uppercase",
-                      isActive(link.href, pathname)
-                        ? "font-medium text-ink"
-                        : "text-grey-1"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                )}
-              </li>
-            ))}
-            <li data-menu-item className="pt-4 sm:hidden">
-              <CtaLink
-                href="/contact"
-                size="nav"
-                icon={<ArrowRightIcon />}
-                onClick={closeMobile}
-              >
-                Contact Us
-              </CtaLink>
-            </li>
-          </ul>
-          {/* Menu telemetry: rule draws, status decodes (decorative) */}
-          <div
-            aria-hidden="true"
-            className="container-content flex items-center gap-3 pb-6 font-mono text-micro tracking-[0.14em] text-grey-2 uppercase"
-          >
-            <span className="animate-breathe size-1.5 shrink-0 rounded-full bg-brand" />
-            <span data-menu-meta className="shrink-0">
-              NAV_{String(NAV_LINKS.length).padStart(2, "0")} · SYSTEM_READY
-            </span>
-            <span
-              data-menu-rule
-              className="h-px flex-1 origin-left bg-divider"
-            />
-          </div>
-        </nav>
-      )}
+      <AnimatePresence>
+        {open && (
+          <MobileNav
+            pathname={pathname}
+            servicesOpen={mobileServicesOpen}
+            onToggleServices={() => setMobileServicesOpen((v) => !v)}
+            onNavigate={closeMobile}
+          />
+        )}
+      </AnimatePresence>
     </header>
+  )
+}
+
+/* Mobile menu: panel wipes down → items stagger in → rule draws → status
+   decodes. Closing plays it back quicker: items first, then the panel. */
+const mobilePanel: Variants = {
+  closed: {
+    clipPath: "inset(0% 0% 100% 0%)",
+    transition: {
+      duration: 0.3,
+      delay: 0.12,
+      ease: EASE_IN_OUT,
+      delayChildren: stagger(0.025, { from: "last" }),
+    },
+  },
+  open: {
+    clipPath: "inset(0% 0% 0% 0%)",
+    transition: {
+      duration: 0.42,
+      ease: EASE_OUT,
+      delayChildren: stagger(0.045, { startDelay: 0.08 }),
+    },
+  },
+}
+
+const mobileItem: Variants = {
+  closed: { opacity: 0, x: -8, transition: { duration: 0.18, ease: "easeIn" } },
+  open: { opacity: 1, x: 0, transition: { duration: 0.5, ease: EASE_OUT } },
+}
+
+const mobileRule: Variants = {
+  closed: { scaleX: 0 },
+  open: {
+    scaleX: 1,
+    transition: { duration: 0.7, delay: 0.25, ease: EASE_OUT },
+  },
+}
+
+function MobileNav({
+  pathname,
+  servicesOpen,
+  onToggleServices,
+  onNavigate,
+}: {
+  pathname: string
+  servicesOpen: boolean
+  onToggleServices: () => void
+  onNavigate: () => void
+}) {
+  // Still mounted while it animates out; not interactive by then
+  const isPresent = useIsPresent()
+  const metaRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const meta = metaRef.current
+    if (!meta || prefersReducedMotion()) return
+    const ctx = gsap.context(() => {
+      gsap.to(meta, {
+        duration: 0.6,
+        delay: 0.3,
+        ease: "none",
+        scrambleText: {
+          text: meta.textContent ?? "",
+          chars: SCRAMBLE_CHARS,
+          speed: 0.8,
+        },
+      })
+    })
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <motion.nav
+      id="mobile-nav"
+      aria-label="Mobile"
+      inert={!isPresent}
+      variants={mobilePanel}
+      initial="closed"
+      animate="open"
+      exit="closed"
+      className="max-h-[calc(100svh-81px)] overflow-y-auto border-t border-divider bg-canvas lg:hidden"
+    >
+      <ul className="container-content flex flex-col py-4">
+        {NAV_LINKS.map((link) => (
+          <motion.li key={link.href} variants={mobileItem}>
+            {link.hasMenu ? (
+              <>
+                <button
+                  type="button"
+                  aria-expanded={servicesOpen}
+                  aria-controls="mobile-services-menu"
+                  onClick={onToggleServices}
+                  className="flex w-full items-center justify-between py-3 text-body-sm tracking-[0.0686em] text-grey-1 uppercase"
+                >
+                  {link.label}
+                  <ChevronDownIcon
+                    className={cn(
+                      "size-[17px] transition-transform duration-200",
+                      servicesOpen && "rotate-180"
+                    )}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {servicesOpen && (
+                    <motion.div
+                      id="mobile-services-menu"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: EASE_OUT }}
+                      className="overflow-hidden"
+                    >
+                      <ServicesMenuList onNavigate={onNavigate} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            ) : (
+              <Link
+                href={link.href}
+                aria-current={
+                  isActive(link.href, pathname) ? "page" : undefined
+                }
+                onClick={onNavigate}
+                className={cn(
+                  "block py-3 text-body-sm tracking-[0.0686em] uppercase",
+                  isActive(link.href, pathname)
+                    ? "font-medium text-ink"
+                    : "text-grey-1"
+                )}
+              >
+                {link.label}
+              </Link>
+            )}
+          </motion.li>
+        ))}
+        <motion.li variants={mobileItem} className="pt-4 sm:hidden">
+          <CtaLink
+            href="/contact"
+            size="nav"
+            icon={<ArrowRightIcon />}
+            onClick={onNavigate}
+          >
+            Contact Us
+          </CtaLink>
+        </motion.li>
+      </ul>
+      {/* Menu telemetry: rule draws, status decodes (decorative) */}
+      <div
+        aria-hidden="true"
+        className="container-content flex items-center gap-3 pb-6 font-mono text-micro tracking-[0.14em] text-grey-2 uppercase"
+      >
+        <span className="animate-breathe size-1.5 shrink-0 rounded-full bg-brand" />
+        <span ref={metaRef} className="shrink-0">
+          NAV_{String(NAV_LINKS.length).padStart(2, "0")} · SYSTEM_READY
+        </span>
+        <motion.span
+          variants={mobileRule}
+          className="h-px flex-1 origin-left bg-divider"
+        />
+      </div>
+    </motion.nav>
   )
 }
